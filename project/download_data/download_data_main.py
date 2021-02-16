@@ -27,17 +27,19 @@ from typing import List
 import pandas as pd  # type: ignore
 import pandas_datareader as pdr  # type: ignore
 import yfinance as yf  # type: ignore
+from datetime import datetime as dt
 
 import download_data_tools
 
 # -----------------------------------------------------------------------------
 
 
-def portfolio_download_data(ticker: str, time_step: str) -> None:
+def portfolio_download_data(ticker: str, year: int, time_step: str) -> None:
     """Downloads the prices of a ticker for several year in a time interval.
 
     :param ticker: string of the abbreviation of the stock to be analyzed
      (i.e. 'AAPL').
+    :param year: initial year of the analysis (i.e. '1980').
     :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :return: None -- The function saves the data in a file and does not return
      a value.
@@ -46,14 +48,18 @@ def portfolio_download_data(ticker: str, time_step: str) -> None:
     try:
         function_name: str = portfolio_download_data.__name__
         download_data_tools \
-            .function_header_print_data(function_name, ticker, time_step)
+            .function_header_print_data(function_name, ticker, year,
+                                        time_step)
 
-        # yf.pdr_override()
-        # raw_data = pdr.get_data_yahoo(ticker, period='max', interval=time_step)
+        init_date = dt(year=year, month=1, day=1)
 
-        raw_data = yf.download(tickers=ticker, period='max', interval='1d')
+        # Not all the periods can be combined with the time steps.
+        raw_data = yf.download(tickers='AIG', start=init_date,
+                               interval=time_step)['Adj Close']
 
-        print(raw_data)
+        print(raw_data.isnull().sum())
+        # print(raw_data.dropna(axis=1, how='any'))
+        # print(type(raw_data))
 
     except AssertionError as error:
         print('No data')
@@ -89,12 +95,15 @@ def main() -> None:
 
     download_data_tools.initial_message()
 
+    # S&P 500 companies, period and time step
+    stocks = download_data_tools.get_stocks(['Financials'])
+    # print(stocks)
     # Basic folders
     # hist_data_tools_download.hist_start_folders(fx_pairs_1, years_1)
 
     # Run analysis
     # Download data
-    portfolio_download_data('AAPL', '1m')
+    portfolio_download_data(stocks, 1980, '1d')
 
     print('Ay vamos!!!')
 

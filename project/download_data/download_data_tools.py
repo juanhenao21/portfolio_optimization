@@ -7,6 +7,7 @@ in the modules that use them.
 This script requires the following modules:
     * os
     * typing
+    * pandas
 
 The module contains the following functions:
     * hist_function_header_print_data - prints info about the function running.
@@ -23,16 +24,19 @@ The module contains the following functions:
 import os
 from typing import List
 
+import pandas as pd  # type: ignore
+
 # -----------------------------------------------------------------------------
 
 
-def function_header_print_data(function_name: str, ticker: str,
+def function_header_print_data(function_name: str, ticker: str, year:str,
                                time_step: str) -> None:
     """Prints a header of a function that generates data when it is running.
 
     :param function_name: name of the function that generates the data.
     :param ticker: string of the abbreviation of the stock to be analyzed
      (i.e. 'AAPL').
+    :param year: initial year of the analysis (i.e. '1980').
     :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :return: None -- The function prints a message and does not return a value.
     """
@@ -40,8 +44,8 @@ def function_header_print_data(function_name: str, ticker: str,
     print('Portfolio Optimization')
     print(function_name)
 
-    print(f'Downloading data for the ticker {ticker} in time steps of '
-          + f'{time_step}')
+    print(f'Downloading data for the ticker {ticker} from {year} to the '
+          + f'present in time steps of {time_step}')
     print()
 
 # -----------------------------------------------------------------------------
@@ -106,6 +110,29 @@ def initial_message() -> None:
     print('* https://github.com/juanhenao21/portfolio_optimization')
     # print('* https://forex-response_spread-year.readthedocs.io/en/latest/')
     print()
+
+# -----------------------------------------------------------------------------
+
+
+def get_stocks(sectors: List[str]) -> List:
+    """Get the stocks from the S&P 500.
+
+    :param sectors: List of the sectors to download the data (i.e. ['all'],
+     ['Financials', 'Utilities']).
+    :return: List -- The function returns a list with stocks symbols.
+    """
+
+    data = pd.read_html(
+        'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')[0]
+
+    if sectors[0] == 'all':
+        stocks = list(data['Symbol'])
+    else:
+        stocks = []
+        for sector in sectors:
+            stocks.extend(list(data[data['GICS Sector'] == sector]['Symbol']))
+
+    return stocks
 
 # -----------------------------------------------------------------------------
 
