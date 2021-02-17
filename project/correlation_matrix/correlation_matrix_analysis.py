@@ -1,18 +1,20 @@
-'''HIST data analysis module.
+'''Portfolio optimization correlation matrix analysis module.
 
-The functions in the module compute the response function in trade time scale
-from the Historic Rate Data from HIST Capital data in a year.
+The functions in the module compute the returns, the normalized returns and the
+correlation matrix of financial time series.
 
 This script requires the following modules:
     * os
     * pickle
     * typing
     * pandas
+    * correlation_matrix_tools
 
 The module contains the following functions:
-    * hist_fx_correlations_physical_data - computes the correlation matrices
-      for different time intervals.
-    * hist_fx_returns-year_physical_data - concatenates the returns of a year
+    * returns - computes the returns of the time series.
+    * normalized_returns - normalize the returns of the time series.
+    * correlation_matrix - compute the correlation matrix of the normalized
+      returns.
     * main - the main function of the script.
 
 ..moduleauthor:: Juan Camilo Henao Londono <www.github.com/juanhenao21>
@@ -22,80 +24,41 @@ The module contains the following functions:
 
 import os
 import pickle
-from typing import List, Tuple
+from typing import List
 
 import pandas as pd  # type: ignore
+from matplotlib import pyplot as plt
 
-import hist_data_tools_matrices_physical
+import correlation_matrix_tools
 
 # -----------------------------------------------------------------------------
 
 
-def hist_fx_returns_year_physical_data(fx_pairs: List[str], year: str) -> None:
-    """Concatenates the returns of a year for different forex pairs.
+def returns(year: str, time_step: str) -> None:
+    """computes the returns of the time series.
 
-    :param fx_pairs: list of the string abbreviation of the forex pairs to be
-     analyzed (i.e. ['eur_usd', 'gbp_usd']).
-    :param year: string of the year to be analyzed (i.e. '2016').
+    :param year: initial year of the analysis (i.e. '1980').
+    :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :return: None -- The function saves the data in a file and does not return
      a value.
     """
 
-    weeks: Tuple[str, ...] = hist_data_tools_matrices_physical.hist_weeks()
-
-    function_name: str = hist_fx_returns_year_physical_data.__name__
-    hist_data_tools_matrices_physical \
-        .hist_function_header_print_data(function_name, year, 'returns')
+    function_name: str = returns.__name__
+    correlation_matrix_tools \
+        .function_header_print_data(function_name, year, 'returns')
 
     try:
 
-        fx_df_concat: pd.DataFrame = pd.DataFrame()
+        # Load data
+        data = pickle.load(open(
+                    f'../data/original_data/original_data_{year}_step'
+                    + f'_{time_step}.pickle', 'rb'))
 
-        fx_pair: str
-        for fx_pair in fx_pairs:
-            # Load first week data
-            fx_data: pd.DataFrame = pickle.load(open(
-                f'../../hist_data/physical_basic_data_{year}/hist_fx_physical'
-                + f'_basic_data/{fx_pair}/hist_fx_physical_basic_data'
-                + f'_{fx_pair}_w01.pickle', 'rb'))
+        data_returns = data.pct_change().dropna()
 
-            fx_series_concat = fx_data['Returns']
-
-            week: str
-            for week in weeks[1:]:
-                # Load data
-                fx_data = pickle.load(open(
-                    f'../../hist_data/physical_basic_data_{year}/hist_fx'
-                    + f'_physical_basic_data/{fx_pair}/hist_fx_physical_basic'
-                    + f'_data_{fx_pair}_w{week}.pickle', 'rb'))
-
-                fx_series_concat = pd.concat([fx_series_concat,
-                                              fx_data['Returns']])
-
-            fx_df_concat = pd.concat([fx_df_concat, fx_series_concat], axis=1)\
-                             .rename(columns={'Returns': fx_pair})
-
-        if (not os.path.isdir(
-                f'../../hist_data/matrices_physical_{year}/hist_fx_matrices'
-                + f'_physical_data/')):
-
-            try:
-                os.mkdir(
-                    f'../../hist_data/matrices_physical_{year}/hist_fx'
-                    + f'_matrices_physical_data/')
-                print('Folder to save data created')
-
-            except FileExistsError:
-                print('Folder exists. The folder was not created')
-
-        pickle.dump(fx_df_concat, open(
-                        f'../../hist_data/matrices_physical_{year}/hist_fx'
-                        + f'_matrices_physical_data/hist_fx_returns_matrices'
-                        + f'_physical_data_{year}.pickle', 'wb'))
-
-        del fx_data
-        del fx_series_concat
-        del fx_df_concat
+        # Saving data
+        correlation_matrix_tools \
+            .save_data(data_returns, function_name, year, time_step)
 
     except FileNotFoundError as error:
         print('No data')
