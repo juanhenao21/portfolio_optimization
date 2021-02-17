@@ -6,13 +6,13 @@ in several intervals.
 This script requires the following modules:
     * os
     * typing
-    * yfinance
     * pandas
-    * pandas_datareader
+    * yfinance
+    * datetime
+    * download_data_tools
 
 The module contains the following functions:
     * portfolio_download_data - download data of a ticker.
-    * portfolio_download_all_data - downloads all the tickers data.
     * main - the main function of the script.
 
 .. moduleauthor:: Juan Camilo Henao Londono <www.github.com/juanhenao21>
@@ -25,7 +25,6 @@ import os
 from typing import List
 
 import pandas as pd  # type: ignore
-import pandas_datareader as pdr  # type: ignore
 import yfinance as yf  # type: ignore
 from datetime import datetime as dt
 
@@ -34,11 +33,12 @@ import download_data_tools
 # -----------------------------------------------------------------------------
 
 
-def portfolio_download_data(ticker: str, year: int, time_step: str) -> None:
+def portfolio_download_data(tickers: List[str], year: int,
+                            time_step: str) -> None:
     """Downloads the prices of a ticker for several year in a time interval.
 
-    :param ticker: string of the abbreviation of the stock to be analyzed
-     (i.e. 'AAPL').
+    :param tickers: list of the string abbreviation of the stocks to be
+     analyzed (i.e. ['AAPL', 'MSFT']).
     :param year: initial year of the analysis (i.e. '1980').
     :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :return: None -- The function saves the data in a file and does not return
@@ -48,39 +48,24 @@ def portfolio_download_data(ticker: str, year: int, time_step: str) -> None:
     try:
         function_name: str = portfolio_download_data.__name__
         download_data_tools \
-            .function_header_print_data(function_name, ticker, year,
+            .function_header_print_data(function_name, tickers, year,
                                         time_step)
 
         init_date = dt(year=year, month=1, day=1)
 
         # Not all the periods can be combined with the time steps.
-        raw_data = yf.download(tickers='AIG', start=init_date,
+        raw_data = yf.download(tickers=tickers, start=init_date,
                                interval=time_step)['Adj Close']
 
-        print(raw_data.isnull().sum())
-        # print(raw_data.dropna(axis=1, how='any'))
-        # print(type(raw_data))
+        # Remove stocks that do not have data from the initial date
+        filter_data = raw_data.dropna(axis=1, thresh=len(raw_data) - 10) \
+                                     .fillna(method='ffill')
+
+        download_data_tools.save_data(filter_data, year, time_step)
 
     except AssertionError as error:
         print('No data')
         print(error)
-
-# -----------------------------------------------------------------------------
-
-
-def hist_download_all_data(fx_pairs: List[str], years: List[str]) -> None:
-    """Downloads all the HIST data.
-
-    :param fx_pairs: list of the string abbreviation of the forex pairs to be
-     analyzed (i.e. ['eur_usd', 'gbp_usd']).
-    :param years: list of the strings of the years to be analyzed
-     (i.e. ['2016', '2017]).
-    :return: None -- The function saves the data in a file and does not return
-     a value.
-    """
-
-    with mp.Pool(processes=mp.cpu_count()) as pool:
-        pool.starmap(hist_download_data, iprod(fx_pairs, years))
 
 # -----------------------------------------------------------------------------
 
@@ -95,15 +80,18 @@ def main() -> None:
 
     download_data_tools.initial_message()
 
-    # S&P 500 companies, period and time step
+    # S&P 500 companies, initial year and time step
     stocks = download_data_tools.get_stocks(['Financials'])
+    year = 1980
+    time_step = '1d'
     # print(stocks)
+
     # Basic folders
-    # hist_data_tools_download.hist_start_folders(fx_pairs_1, years_1)
+    download_data_tools.start_folders(year, time_step)
 
     # Run analysis
     # Download data
-    portfolio_download_data(stocks, 1980, '1d')
+    portfolio_download_data(stocks, year, time_step)
 
     print('Ay vamos!!!')
 
