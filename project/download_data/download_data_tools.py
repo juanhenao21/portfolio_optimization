@@ -10,9 +10,11 @@ This script requires the following modules:
     * pandas
 
 The module contains the following functions:
-    * hist_function_header_print_data - prints info about the function running.
-    * hist_start_folders - creates folders to save data and plots.
-    * hist_initial_message - prints the initial message with basic information.
+    * save_data - saves the data downloaded.
+    * function_header_print_data - prints info about the function running.
+    * start_folders - creates folders to save data and plots.
+    * initial_message - prints the initial message with basic information.
+    * get_stocks - get the stocks of the S&P 500
     * main - the main function of the script.
 
 .. moduleauthor:: Juan Camilo Henao Londono <www.github.com/juanhenao21>
@@ -22,9 +24,28 @@ The module contains the following functions:
 # Modules
 
 import os
+import pickle
 from typing import List
 
 import pandas as pd  # type: ignore
+
+# -----------------------------------------------------------------------------
+
+
+def save_data(data: pd.DataFrame, year: str, time_step: str) -> None:
+    """ Saves the data downloaded.
+
+    :param year: initial year of the analysis (i.e. '1980').
+    :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
+    :return: None -- The function prints a message and does not return a value.
+    """
+
+    # Saving data
+
+    pickle.dump(data, open(f'../data/original_data/original_data_{year}'
+                           +f'_step_{time_step}.pickle', 'wb'))
+
+    print('Data Saved')
 
 # -----------------------------------------------------------------------------
 
@@ -44,49 +65,40 @@ def function_header_print_data(function_name: str, ticker: str, year:str,
     print('Portfolio Optimization')
     print(function_name)
 
-    print(f'Downloading data for the ticker {ticker} from {year} to the '
-          + f'present in time steps of {time_step}')
+    print(f'Downloading data for the tickers {ticker} from the year {year} to '
+          + f'the present in time steps of {time_step}')
     print()
 
 # -----------------------------------------------------------------------------
 
 
-def hist_start_folders(fx_pairs: List[str], years: List[str]) -> None:
+def start_folders(year: str, time_step: str) -> None:
     """Creates the initial folders to save the data and plots.
 
-    :param fx_pairs: list of the string abbreviation of the forex pairs to be
-     analyzed (i.e. ['eur_usd', 'gbp_usd']).
-    :param years: List of the strings of the year to be analyzed
-     (i.e ['2016', '2017']).
+    :param year: initial year of the analysis (i.e. '1980').
+    :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :return: None -- The function creates folders and does not return a value.
     """
     try:
-        os.mkdir(f'../../hist_data')
-        os.mkdir(f'../../hist_plot')
+        os.mkdir(f'../data')
+        os.mkdir(f'../plot')
         print('Folder to save data created')
+        print()
 
     except FileExistsError as error:
         print('Folder exists. The folder was not created')
         print(error)
+        print()
 
-    for year in years:
-        try:
-            os.mkdir(f'../../hist_data/original_data_{year}')
-            print('Folder to save data created')
+    try:
+        os.mkdir(f'../data/original_data')
+        print('Folder to save data created')
+        print()
 
-        except FileExistsError as error:
-            print('Folder exists. The folder was not created')
-            print(error)
-
-        for fx_pair in fx_pairs:
-
-            try:
-                os.mkdir(f'../../hist_data/original_data_{year}/{fx_pair}')
-                print('Folder to save data created')
-
-            except FileExistsError as error:
-                print('Folder exists. The folder was not created')
-                print(error)
+    except FileExistsError as error:
+        print('Folder exists. The folder was not created')
+        print(error)
+        print()
 
 # -----------------------------------------------------------------------------
 
