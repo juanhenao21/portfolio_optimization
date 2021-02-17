@@ -31,7 +31,7 @@ import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
 import seaborn as sns  # type: ignore
 
-import hist_data_tools_matrices_physical
+import correlation_matrix_tools
 
 # -----------------------------------------------------------------------------
 
