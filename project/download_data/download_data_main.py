@@ -82,7 +82,7 @@ def main() -> None:
 
     # S&P 500 companies, initial year and time step
     stocks = download_data_tools.get_stocks(['Financials'])
-    year = 1980
+    year = '1980'
     time_step = '1d'
     # print(stocks)
 
