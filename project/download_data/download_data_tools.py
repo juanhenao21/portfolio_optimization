@@ -6,6 +6,7 @@ in the modules that use them.
 
 This script requires the following modules:
     * os
+    * pickle
     * typing
     * pandas
 
@@ -46,6 +47,7 @@ def save_data(data: pd.DataFrame, year: str, time_step: str) -> None:
                            +f'_step_{time_step}.pickle', 'wb'))
 
     print('Data Saved')
+    print()
 
 # -----------------------------------------------------------------------------
 
