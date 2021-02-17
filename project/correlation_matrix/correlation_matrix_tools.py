@@ -1,4 +1,4 @@
-'''HIST data tools module.
+'''Portfolio optimization correlation matrix tools module.
 
 The functions in the module do small repetitive tasks, that are used along the
 whole implementation. These tools improve the way the tasks are standardized
@@ -12,13 +12,12 @@ This script requires the following modules:
     * numpy
 
 The module contains the following functions:
-    * hist_save_data - saves computed data.
-    * hist_save_plot - saves figures.
-    * hist_function_header_print_data - prints info about the function running.
-    * hist_function_header_print_plot - prints info about the plot.
-    * hist_start_folders - creates folders to save data and plots.
-    * hist_initial_message - prints the initial message with basic information.
-    * hist_weeks - tuple with the numbers from 1 to 53 representing the weeks.
+    * save_data - saves computed data.
+    * save_plot - saves figures.
+    * function_header_print_data - prints info about the function running.
+    * function_header_print_plot - prints info about the plot.
+    * start_folders - creates folders to save data and plots.
+    * initial_message - prints the initial message with basic information.
     * gaussian_distribution - compute gaussian distribution values.
     * main - the main function of the script.
 
@@ -30,7 +29,7 @@ The module contains the following functions:
 
 import os
 import pickle
-from typing import Any, List, Tuple
+from typing import Any, List
 
 from matplotlib import pyplot as plt  # type: ignore
 import numpy as np  # type: ignore
@@ -38,40 +37,25 @@ import numpy as np  # type: ignore
 # -----------------------------------------------------------------------------
 
 
-def hist_save_data(data: Any, year: str, interval: str, period: str) -> None:
+def save_data(data: Any, function_name: str, year: str,
+              time_step: str) -> None:
     """Saves computed data in pickle files.
 
     Saves the data generated in the functions of the
-    hist_data_analysis_matrices_physical module in pickle files.
+    correlation_matrix_analysis module in pickle files.
 
     :param data: data to be saved. The data can be of different types.
-    :param year: string of the year to be analyzed (i.e '2016').
-    :param interval: string of the interval to be analyzed (i.e. 'week',
-     'month', 'quarter', 'year')
-    :param period: location in the interval (i. e. '01')
+    :param year: initial year of the analysis (i.e. '1980').
+    :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :return: None -- The function saves the data in a file and does not return
      a value.
     """
 
     # Saving data
 
-    if (not os.path.isdir(
-            f'../../hist_data/matrices_physical_{year}/hist_fx_matrices'
-            + f'_physical_data/')):
-
-        try:
-            os.mkdir(
-                f'../../hist_data/matrices_physical_{year}/hist_fx_matrices'
-                + f'_physical_data/')
-            print('Folder to save data created')
-
-        except FileExistsError:
-            print('Folder exists. The folder was not created')
-
     pickle.dump(data, open(
-        f'../../hist_data/matrices_physical_{year}/hist_fx_matrices_physical'
-                + f'_data/hist_fx_corr_physical_data_{year}_int_{interval}'
-                + f'_{period}.pickle', 'wb'))
+        f'../data/correlation_matrix/{function_name}_{year}_step_{time_step}'
+                + f'.pickle', 'wb'))
 
     print('Data Saved')
     print()
@@ -118,26 +102,23 @@ def hist_save_plot(function_name: str, figure: plt.Figure, year: str,
 # -----------------------------------------------------------------------------
 
 
-def hist_function_header_print_data(function_name: str, year: str,
-                                    kind: str) -> None:
+def function_header_print_data(function_name: str, year: str,
+                               time_step: str) -> None:
     """Prints a header of a function that generates data when it is running.
 
     :param function_name: name of the function that generates the data.
-    :param year: string of the year to be analyzed (i.e '2016').
-    :param kind: kind of analysis (i.e 'returns').
+    :param year: initial year of the analysis (i.e. '1980').
+    :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :return: None -- The function prints a message and does not return a
      value.
     """
 
-    print('HIST data')
+    print('Portfolio Optimization')
     print(function_name)
 
-    if kind == 'returns':
-        print(f'Processing the returns in the year {year}')
-        print()
-    else:
-        print(f'Processing correlation matrices in the year {year}')
-        print()
+    print(f'Computing the results of the data from the year {year} to the '
+          + f'present in time steps of {time_step}')
+    print()
 
 # -----------------------------------------------------------------------------
 
@@ -166,71 +147,47 @@ def hist_function_header_print_plot(function_name: str, year: str,
 # -----------------------------------------------------------------------------
 
 
-def hist_start_folders(years: List[str]) -> None:
+def start_folders(year: str, time_step: str) -> None:
     """Creates the initial folders to save the data and plots.
 
-    :param years: List of the strings of the year to be analyzed
-     (i.e ['2016', '2017']).
+    :param year: initial year of the analysis (i.e. '1980').
+    :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :return: None -- The function creates folders and does not return a value.
     """
 
-    year: str
-    for year in years:
+    try:
+        os.mkdir(f'../data/correlation_matrix')
+        os.mkdir(f'../plot/correlation_matrix')
+        print('Folder to save data created')
+        print()
 
-        try:
-            os.mkdir(f'../../hist_data/matrices_physical_{year}')
-            os.mkdir(f'../../hist_plot/matrices_physical_{year}')
-            print('Folder to save data created')
-            print()
-
-        except FileExistsError as error:
-            print('Folder exists. The folder was not created')
-            print(error)
+    except FileExistsError as error:
+        print('Folder exists. The folder was not created')
+        print(error)
+        print()
 
 # -----------------------------------------------------------------------------
 
 
-def hist_initial_message() -> None:
+def initial_message() -> None:
     """Prints the initial message with basic information.
 
     :return: None -- The function prints a message and does not return a value.
     """
 
     print()
-    print('#####################################')
-    print('HIST Matrices Physical Time Analysis')
-    print('#####################################')
+    print('##################')
+    print('Correlation Matrix')
+    print('##################')
     print('AG Guhr')
     print('Faculty of Physics')
     print('University of Duisburg-Essen')
     print('Author: Juan Camilo Henao Londono')
     print('More information in:')
     print('* https://juanhenao21.github.io/')
-    print('* https://github.com/juanhenao21/forex_matrices')
+    print('* https://github.com/juanhenao21/portfolio_optimization')
     # print('* https://forex-response_spread-year.readthedocs.io/en/latest/')
     print()
-
-# -----------------------------------------------------------------------------
-
-
-def hist_weeks() -> Tuple[str, ...]:
-    """Generates a tuple with the numbers from 1 to 53 representing the weeks
-       in a year.
-
-    :return: tuple.
-    """
-
-    week_num = []
-
-    val: int
-    for val in range(1, 54):
-        if val < 10:
-            val_str: str = f'0{val}'
-            week_num.append(f'{val_str}')
-        else:
-            week_num.append(f'{val}')
-
-    return tuple(week_num)
 
 # -----------------------------------------------------------------------------
 
