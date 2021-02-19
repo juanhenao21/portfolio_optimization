@@ -45,6 +45,7 @@ def save_data(data: Any, function_name: str, year: str,
     correlation_matrix_analysis module in pickle files.
 
     :param data: data to be saved. The data can be of different types.
+    :param function_name: name of the function that generates the plot.
     :param year: initial year of the analysis (i.e. '1980').
     :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :return: None -- The function saves the data in a file and does not return
@@ -63,40 +64,27 @@ def save_data(data: Any, function_name: str, year: str,
 # -----------------------------------------------------------------------------
 
 
-def hist_save_plot(function_name: str, figure: plt.Figure, year: str,
-                   interval: str) -> None:
+def save_plot(figure: plt.Figure, function_name: str, year: str,
+              time_step: str) -> None:
     """Saves plot in png files.
 
     Saves the plot generated in the functions of the
-    hist_data_plot_matrices_trade module in png files.
+    correlation_matrix_analysis module in png files.
 
-    :param function_name: name of the function that generates the plot.
     :param figure: figure object that is going to be save.
-    :param year: string of the year to be analyzed (i.e '2016').
-    :param interval: string of the interval to be analyzed (i.e. 'week',
-     'month', 'quarter', 'year')
+    :param function_name: name of the function that generates the plot.
+    :param year: initial year of the analysis (i.e. '1980').
+    :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :return: None -- The function save the plot in a file and does not return
      a value.
     """
 
     # Saving plot data
 
-    if (not os.path.isdir(
-            f'../../hist_plot/matrices_physical_{year}/{function_name}/')):
+    figure.savefig(f'../plot/correlation_matrix/{function_name}_{year}_step'
+                   + f'_{time_step}.png')
 
-        try:
-            os.mkdir(f'../../hist_plot/matrices_physical_{year}/'
-                     + f'{function_name}/')
-            print('Folder to save data created')
-
-        except FileExistsError:
-            print('Folder exists. The folder was not created')
-
-    figure.savefig(f'../../hist_plot/matrices_physical_{year}'
-                   + f'/{function_name}/{function_name}'
-                   + f'_{year}_{interval}.png')
-
-    print('Plot saved')
+    print('Plot Saved')
     print()
 
 # -----------------------------------------------------------------------------
@@ -123,26 +111,23 @@ def function_header_print_data(function_name: str, year: str,
 # -----------------------------------------------------------------------------
 
 
-def hist_function_header_print_plot(function_name: str, year: str,
-                                    kind: str) -> None:
+def function_header_print_plot(function_name: str, year: str,
+                               time_step: str) -> None:
     """Prints a header of a function that generates a plot when it is running.
 
-    :param function_name: name of the function that generates the plot.
-    :param year: string of the year to be analyzed (i.e '2016').
-    :param kind: kind of analysis (i.e 'returns').
+    :param function_name: name of the function that generates the data.
+    :param year: initial year of the analysis (i.e. '1980').
+    :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :return: None -- The function prints a message and does not return a
      value.
     """
 
-    print('HIST data')
+    print('Portfolio Optimization')
     print(function_name)
 
-    if kind == 'returns':
-        print(f'Processing plot for returns in the year {year}')
-        print()
-    else:
-        print(f'Processing plot for correlation matrices in {year}')
-        print()
+    print(f'Computing the plots of the data from the year {year} to the '
+          + f'present in time steps of {time_step}')
+    print()
 
 # -----------------------------------------------------------------------------
 
