@@ -1,7 +1,7 @@
-'''HIST data plot module.
+'''Portfolio optimization correlation matrix plot module.
 
 The functions in the module plot the data obtained in the
-hist_data_analysis_responses_physical module.
+correlation_matrix_analysis module.
 
 This script requires the following modules:
     * gc
@@ -9,12 +9,13 @@ This script requires the following modules:
     * matplotlib
     * numpy
     * pandas
-    * hist_data_tools_data_extract
+    * seaborn
+    * correlation_matrix_tools
 
 The module contains the following functions:
-    * hist_fx_returns_distributions_physical_plot - plots the correlation
-      matrices.
-    * hist_fx_correlations_physical_plot - plots the correlation matrices.
+    * returns_plot - plots the returns of five stocks.
+    * normalized_returns_plot - plots the normalized returns of five stocks.
+    * matrix_correlation_plot - plots the correlation matrix.
     * main - the main function of the script.
 
 .. moduleauthor:: Juan Camilo Henao Londono <www.github.com/juanhenao21>
@@ -36,43 +37,77 @@ import correlation_matrix_tools
 # -----------------------------------------------------------------------------
 
 
-def hist_fx_returns_distributions_physical_plot(year: str,
-                                                interval: str) -> None:
-    """Plots the returns distribution for different intervals of time.
+def returns_plot(year: str, time_step: str) -> None:
+    """Plots the returns of five stocks.
 
-    :param year: string of the year to be analyzed (i.e. '2016').
-    :param interval: string of the interval to be analyzed (i.e. 'week',
-     'month', 'quarter', 'year')
+    :param year: initial year of the analysis (i.e. '1980').
+    :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :return: None -- The function saves the plot in a file and does not return
      a value.
     """
 
-    function_name: str = \
-        hist_fx_returns_distributions_physical_plot.__name__
-    hist_data_tools_matrices_physical \
-        .hist_function_header_print_plot(function_name, year, 'returns')
+    function_name: str = returns_plot.__name__
+    correlation_matrix_tools \
+        .function_header_print_plot(function_name, year, time_step)
 
     try:
 
-        freq: str
-        periods: int
-        if interval == 'week':
-            freq = 'W'
-            periods = 52
-        elif interval == 'month':
-            freq = 'MS'
-            periods = 12
-        else:
-            freq = 'QS'
-            periods = 4
+        # Load data
+        returns_data: pd.DataFrame = pickle.load(open(
+                        f'../data/correlation_matrix/returns_data_{year}_step'
+                        + f'_{time_step}.pickle', 'rb')).iloc[:, :5]
+
+        print(returns_data)
+
+        figure: plt.figure = plt.figure()
+
+        returns_data.plot(subplots=True, sharex=True, figsize=(16, 16), grid=True, xlim=(returns_data.index[0].year, returns_data.index[-1].year))
+
+        print()
+
+        # plt.xlabel('Time')#, fontsize=35)
+        # plt.ylabel('Returns')#, fontsize=35)
+        # plt.xticks(fontsize=25)
+        # plt.yticks(fontsize=25)
+        # plt.grid(True)
+        # plt.tight_layout()
+        plt.show()
+
+        # Plotting
+        correlation_matrix_tools \
+            .save_plot(figure, function_name, year, time_step)
+
+        plt.close()
+
+    except FileNotFoundError as error:
+        print('No data')
+        print(error)
+        print()
+
+# -----------------------------------------------------------------------------
+
+
+def normalized_returns_plot(year: str, time_step: str) -> None:
+    """Plots the returns of five stocks.
+
+    :param year: initial year of the analysis (i.e. '1980').
+    :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
+    :return: None -- The function saves the plot in a file and does not return
+     a value.
+    """
+
+    function_name: str = returns_plot.__name__
+    correlation_matrix_tools \
+        .function_header_print_plot(function_name, year, time_step)
+
+    try:
 
         # Load data
-        fx_returns: pd.DataFrame = pickle.load(open(
-                        f'../../hist_data/matrices_physical_{year}/hist_fx'
-                        + f'_matrices_physical_data/hist_fx_returns_matrices'
-                        + f'_physical_data_{year}.pickle', 'rb'))
+        returns_data: pd.DataFrame = pickle.load(open(
+                        f'../data/correlation_matrix/returns_data_{year}_step'
+                        + f'_{time_step}.pickle', 'rb')).head()
 
-        fx_returns.fillna(0, inplace=True)
+        print(returns_data)
 
         x_gauss = np.arange(-5, 5, 0.001)
         gaussian: np.ndarray = hist_data_tools_matrices_physical \
