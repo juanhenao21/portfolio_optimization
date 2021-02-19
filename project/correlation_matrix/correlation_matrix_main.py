@@ -46,7 +46,11 @@ def main() -> None:
 
     # Run analysis
     # Analysis and plot
-    correlation_matrix_analysis.returns(year, time_step)
+    correlation_matrix_analysis.returns_data(year, time_step)
+    correlation_matrix_analysis.normalized_returns_data(year, time_step)
+    correlation_matrix_analysis.correlation_matrix_data(year, time_step)
+
+    correlation_matrix_plot.returns_plot(year, time_step)
 
     print('Ay vamos!!!')
 
