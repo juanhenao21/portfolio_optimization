@@ -51,7 +51,7 @@ def portfolio_download_data(tickers: List[str], year: int,
             .function_header_print_data(function_name, tickers, year,
                                         time_step)
 
-        init_date = dt(year=year, month=1, day=1)
+        init_date = dt(year=int(year), month=1, day=1)
 
         # Not all the periods can be combined with the time steps.
         raw_data = yf.download(tickers=tickers, start=init_date,
