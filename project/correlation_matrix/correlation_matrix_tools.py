@@ -29,7 +29,7 @@ The module contains the following functions:
 
 import os
 import pickle
-from typing import Any, List
+from typing import Any
 
 from matplotlib import pyplot as plt  # type: ignore
 import numpy as np  # type: ignore
@@ -132,7 +132,7 @@ def function_header_print_plot(function_name: str, year: str,
 # -----------------------------------------------------------------------------
 
 
-def start_folders(year: str, time_step: str) -> None:
+def start_folders() -> None:
     """Creates the initial folders to save the data and plots.
 
     :param year: initial year of the analysis (i.e. '1980').
@@ -177,9 +177,18 @@ def initial_message() -> None:
 # -----------------------------------------------------------------------------
 
 
-def gaussian_distribution(mean, variance, x):
+def gaussian_distribution(mean: float, variance: float,
+                          x_values: np.ndarray) -> np.ndarray:
+    """Compute the Gaussian distribution values.
+
+        :param mean: mean of the Gaussian distribution.
+        :param variance: variance of the Gaussian distribution.
+        :param x: array of the values to compute the Gaussian
+         distribution
+    """
+
     return (1 / (2 * np.pi * variance) ** 0.5) \
-        * np.exp(-((x - mean) ** 2) / (2 * variance))
+        * np.exp(-((x_values - mean) ** 2) / (2 * variance))
 
 # -----------------------------------------------------------------------------
 

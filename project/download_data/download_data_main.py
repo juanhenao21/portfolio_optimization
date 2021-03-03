@@ -33,7 +33,7 @@ import download_data_tools
 # -----------------------------------------------------------------------------
 
 
-def portfolio_download_data(tickers: List[str], year: int,
+def portfolio_download_data(tickers: List[str], year: str,
                             time_step: str) -> None:
     """Downloads the prices of a ticker for several year in a time interval.
 
@@ -59,7 +59,7 @@ def portfolio_download_data(tickers: List[str], year: int,
 
         # Remove stocks that do not have data from the initial date
         filter_data = raw_data.dropna(axis=1, thresh=len(raw_data) - 10) \
-                                     .fillna(method='ffill')
+            .fillna(method='ffill')
 
         download_data_tools.save_data(filter_data, year, time_step)
 
@@ -82,12 +82,12 @@ def main() -> None:
 
     # S&P 500 companies, initial year and time step
     stocks = download_data_tools.get_stocks(['Financials'])
-    year = '1980'
-    time_step = '1d'
+    year: str = '1980'
+    time_step: str = '1d'
     # print(stocks)
 
     # Basic folders
-    download_data_tools.start_folders(year, time_step)
+    download_data_tools.start_folders()
 
     # Run analysis
     # Download data

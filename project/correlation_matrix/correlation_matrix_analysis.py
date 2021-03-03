@@ -4,9 +4,7 @@ The functions in the module compute the returns, the normalized returns and the
 correlation matrix of financial time series.
 
 This script requires the following modules:
-    * os
     * pickle
-    * typing
     * pandas
     * correlation_matrix_tools
 
@@ -22,12 +20,9 @@ The module contains the following functions:
 # -----------------------------------------------------------------------------
 # Modules
 
-import os
 import pickle
-from typing import List
 
 import pandas as pd  # type: ignore
-from matplotlib import pyplot as plt
 
 import correlation_matrix_tools
 
@@ -51,8 +46,8 @@ def returns_data(year: str, time_step: str) -> None:
 
         # Load data
         data: pd.DataFrame = pickle.load(open(
-                    f'../data/original_data/original_data_{year}_step'
-                    + f'_{time_step}.pickle', 'rb'))
+            f'../data/original_data/original_data_{year}_step_{time_step}'
+            + f'.pickle', 'rb'))
 
         returns_df: pd.DataFrame = data.pct_change().dropna()
 
@@ -85,8 +80,8 @@ def normalized_returns_data(year: str, time_step: str) -> None:
 
         # Load data
         data: pd.DataFrame = pickle.load(open(
-                    f'../data/correlation_matrix/returns_data_{year}_step'
-                    + f'_{time_step}.pickle', 'rb'))
+            f'../data/correlation_matrix/returns_data_{year}_step_{time_step}'
+            + f'.pickle', 'rb'))
 
         normalized_df: pd.DataFrame = (data - data.mean()) / data.std()
 
@@ -119,8 +114,8 @@ def correlation_matrix_data(year: str, time_step: str) -> None:
 
         # Load data
         data: pd.DataFrame = pickle.load(open(
-                    f'../data/correlation_matrix/normalized_returns_data'
-                    + f'_{year}_step_{time_step}.pickle', 'rb'))
+            f'../data/correlation_matrix/normalized_returns_data_{year}_step'
+            + f'_{time_step}.pickle', 'rb'))
 
         corr_matrix_df: pd.DataFrame = data.corr()
 
