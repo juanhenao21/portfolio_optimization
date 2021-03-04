@@ -63,8 +63,9 @@ def returns_plot(year: str, time_step: str) -> None:
 
         _ = [ax.set_ylabel('Returns', fontsize=20) for ax in plot]
         _ = [plot.legend(loc=1, fontsize=20) for plot in plt.gcf().axes]
-        plt.xlabel('Date', fontsize=20)
-        plt.tight_layout(0.5)
+        plt.title(f'Returns since {year} - {time_step}', fontsize=30)
+        plt.xlabel(f'Date - {time_step}', fontsize=20)
+        plt.tight_layout(pad=0.5)
         figure: plt.Figure = plot[0].get_figure()
 
         # Plotting
@@ -110,8 +111,8 @@ def normalized_returns_plot(year: str, time_step: str) -> None:
 
         _ = [ax.set_ylabel('Norm. Returns', fontsize=20) for ax in plot]
         _ = [plot.legend(loc=1, fontsize=20) for plot in plt.gcf().axes]
-        plt.xlabel('Date', fontsize=20)
-        plt.tight_layout(0.5)
+        plt.xlabel(f'Date - {time_step}', fontsize=20)
+        plt.tight_layout(pad=0.5)
         figure: plt.Figure = plot[0].get_figure()
 
         # Plotting
@@ -143,7 +144,7 @@ def normalized_returns_distribution_plot(year: str, time_step: str) -> None:
 
     function_name: str = normalized_returns_distribution_plot.__name__
     correlation_matrix_tools \
-        .function_header_print_plot(function_name, year, time_step)
+        .function_header_print_plot(function_name + 'lin', year, time_step)
 
     try:
 
@@ -152,14 +153,17 @@ def normalized_returns_distribution_plot(year: str, time_step: str) -> None:
             f'../data/correlation_matrix/normalized_returns_data_{year}_step'
             + f'_{time_step}.pickle', 'rb')).iloc[:, :5]
 
-        x_gauss = np.arange(-5, 5, 0.001)
+        x_gauss: np.ndarray = np.arange(-6, 6, 0.001)
         gaussian: np.ndarray = correlation_matrix_tools \
             .gaussian_distribution(0, 1, x_gauss)
 
-        plot = norm_returns_data.plot(kind='density', figsize=(16, 9))
+        # Linear plot
+        plot = norm_returns_data.plot(kind='density',
+                                                   figsize=(16, 9))
 
         plt.plot(x_gauss, gaussian, lw=5, label='Gaussian')
-        plt.title(f'Normalized returns distribution since {year}', fontsize=30)
+        plt.title(f'Normalized returns distribution since {year}'
+                  + f' - {time_step}', fontsize=30)
         plt.legend(loc=1, fontsize=20)
         plt.xlabel('Returns', fontsize=25)
         plt.ylabel('Counts', fontsize=25)
@@ -172,7 +176,31 @@ def normalized_returns_distribution_plot(year: str, time_step: str) -> None:
 
         # Plotting
         correlation_matrix_tools \
-            .save_plot(figure, function_name, year, time_step)
+            .save_plot(figure, function_name + '_lin', year, time_step)
+
+        plt.close()
+        del figure
+
+        # Log plot
+        figure = plt.figure(figsize=(16, 9))
+        plt.hist(norm_returns_data, 100, (-5, 5), density=True, log=True,
+                 histtype='step', label=norm_returns_data.columns)
+        plt.plot(x_gauss, gaussian, lw=5, label='Gaussian')
+        plt.title(f'Normalized returns distribution since {year}'
+                  + f' - {time_step}', fontsize=30)
+
+        plt.legend(loc=0, fontsize=20)
+        plt.xlabel('Returns', fontsize=25)
+        plt.ylabel('Counts', fontsize=25)
+        plt.xticks(fontsize=15)
+        plt.yticks(fontsize=15)
+        plt.xlim(-5, 5)
+        plt.grid(True)
+        plt.tight_layout()
+
+        # Plotting
+        correlation_matrix_tools \
+            .save_plot(figure, function_name + '_log', year, time_step)
 
         plt.close()
         del norm_returns_data
@@ -211,7 +239,8 @@ def correlation_matrix_plot(year: str, time_step: str) -> None:
 
         sns.heatmap(correlations, vmin=-1, vmax=1)
 
-        plt.title(f'Correlation matrix since {year}', fontsize=30)
+        plt.title(f'Correlation matrix since {year} - {time_step}',
+                  fontsize=30)
         plt.yticks(rotation=45)
         plt.xticks(rotation=45)
 
