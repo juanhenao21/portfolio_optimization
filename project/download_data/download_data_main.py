@@ -33,13 +33,15 @@ import download_data_tools
 # -----------------------------------------------------------------------------
 
 
-def portfolio_download_data(tickers: List[str], year: str,
+def portfolio_download_data(tickers: List[str], years: List[str],
                             time_step: str) -> None:
-    """Downloads the prices of a ticker for several year in a time interval.
+    """Downloads the prices of a ticker for an interval of years in a time
+       step.
 
     :param tickers: list of the string abbreviation of the stocks to be
      analyzed (i.e. ['AAPL', 'MSFT']).
-    :param year: initial year of the analysis (i.e. '1980').
+    :param years: List of the interval of years to be analyzed
+     (i.e. ['1980', '2020']).
     :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :return: None -- The function saves the data in a file and does not return
      a value.
@@ -48,20 +50,23 @@ def portfolio_download_data(tickers: List[str], year: str,
     try:
         function_name: str = portfolio_download_data.__name__
         download_data_tools \
-            .function_header_print_data(function_name, tickers, year,
+            .function_header_print_data(function_name, tickers, years,
                                         time_step)
 
-        init_date = dt(year=int(year), month=1, day=1)
+        init_date: dt = dt(year=int(years[0]), month=1, day=1)
+        fin_date: dt = dt(year=int(years[1]), month=1, day=1)
 
         # Not all the periods can be combined with the time steps.
-        raw_data = yf.download(tickers=tickers, start=init_date,
-                               interval=time_step)['Adj Close']
+        raw_data: pd.DataFrame = \
+            yf.download(tickers=tickers, start=init_date, end=fin_date,
+                        interval=time_step)['Adj Close']
 
-        # Remove stocks that do not have data from the initial date
-        filter_data = raw_data.dropna(axis=1, thresh=len(raw_data) - 10) \
-            .fillna(method='ffill')
+        if raw_data.isnull().values.any():
+            # Remove stocks that do not have data from the initial date
+            raw_data = raw_data.dropna(axis=1, thresh=len(raw_data) - 10) \
+                .fillna(method='ffill')
 
-        download_data_tools.save_data(filter_data, year, time_step)
+        download_data_tools.save_data(raw_data, years, time_step)
 
     except AssertionError as error:
         print('No data')
@@ -81,8 +86,8 @@ def main() -> None:
     download_data_tools.initial_message()
 
     # S&P 500 companies, initial year and time step
-    stocks = download_data_tools.get_stocks(['Financials'])
-    year: str = '1980'
+    stocks: List[str] = download_data_tools.get_stocks(['Financials'])
+    years: List[str] = ['1980', '2020']
     time_step: str = '1d'
     # print(stocks)
 
@@ -91,7 +96,10 @@ def main() -> None:
 
     # Run analysis
     # Download data
-    portfolio_download_data(stocks, year, time_step)
+    portfolio_download_data(stocks, years, time_step)
+
+    # test Goodyear
+    portfolio_download_data(['GT'], ['1992', '2012'], '1d')
 
     print('Ay vamos!!!')
 
