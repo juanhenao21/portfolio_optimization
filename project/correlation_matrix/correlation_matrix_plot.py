@@ -212,7 +212,7 @@ def normalized_returns_distribution_plot(years: List[str],
         # Load data
         norm_returns_data: pd.DataFrame = pickle.load(open(
             f'../data/correlation_matrix/normalized_returns_data_{years[0]}'
-            + f'_{years[1]}_step_{time_step}.pickle', 'rb'))#.iloc[:, :5]
+            + f'_{years[1]}_step_{time_step}.pickle', 'rb')).iloc[:, :5]
 
         x_gauss: np.ndarray = np.arange(-6, 6, 0.001)
         gaussian: np.ndarray = correlation_matrix_tools \
