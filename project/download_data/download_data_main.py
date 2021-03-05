@@ -98,9 +98,6 @@ def main() -> None:
     # Download data
     portfolio_download_data(stocks, years, time_step)
 
-    # test Goodyear
-    portfolio_download_data(['GT'], ['1992', '2012'], '1d')
-
     print('Ay vamos!!!')
 
 # -----------------------------------------------------------------------------
