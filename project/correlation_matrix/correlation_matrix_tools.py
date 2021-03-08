@@ -37,7 +37,7 @@ import numpy as np  # type: ignore
 # -----------------------------------------------------------------------------
 
 
-def save_data(data: Any, function_name: str, years: List[str],
+def save_data(data: Any, function_name: str, dates: List[str],
               time_step: str) -> None:
     """Saves computed data in pickle files.
 
@@ -46,8 +46,8 @@ def save_data(data: Any, function_name: str, years: List[str],
 
     :param data: data to be saved. The data can be of different types.
     :param function_name: name of the function that generates the plot.
-    :param years: List of the interval of years to be analyzed
-     (i.e. ['1980', '2020']).
+    :param dates: List of the interval of dates to be analyzed
+     (i.e. ['1980-01', '2020-12']).
     :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :return: None -- The function saves the data in a file and does not return
      a value.
@@ -56,7 +56,7 @@ def save_data(data: Any, function_name: str, years: List[str],
     # Saving data
 
     pickle.dump(data, open(
-        f'../data/correlation_matrix/{function_name}_{years[0]}_{years[1]}'
+        f'../data/correlation_matrix/{function_name}_{dates[0]}_{dates[1]}'
                 + f'_step_{time_step}.pickle', 'wb'))
 
     print('Data Saved')
@@ -65,7 +65,7 @@ def save_data(data: Any, function_name: str, years: List[str],
 # -----------------------------------------------------------------------------
 
 
-def save_plot(figure: plt.Figure, function_name: str, years: List[str],
+def save_plot(figure: plt.Figure, function_name: str, dates: List[str],
               time_step: str) -> None:
     """Saves plot in png files.
 
@@ -74,8 +74,8 @@ def save_plot(figure: plt.Figure, function_name: str, years: List[str],
 
     :param figure: figure object that is going to be save.
     :param function_name: name of the function that generates the plot.
-    :param years: List of the interval of years to be analyzed
-     (i.e. ['1980', '2020']).
+    :param dates: List of the interval of dates to be analyzed
+     (i.e. ['1980-01', '2020-12']).
     :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :return: None -- The function save the plot in a file and does not return
      a value.
@@ -83,8 +83,8 @@ def save_plot(figure: plt.Figure, function_name: str, years: List[str],
 
     # Saving plot data
 
-    figure.savefig(f'../plot/correlation_matrix/{function_name}_{years[0]}'
-                   + f'_{years[1]}_step_{time_step}.png')
+    figure.savefig(f'../plot/correlation_matrix/{function_name}_{dates[0]}'
+                   + f'_{dates[1]}_step_{time_step}.png')
 
     print('Plot Saved')
     print()
@@ -92,13 +92,13 @@ def save_plot(figure: plt.Figure, function_name: str, years: List[str],
 # -----------------------------------------------------------------------------
 
 
-def function_header_print_data(function_name: str, years: List[str],
+def function_header_print_data(function_name: str, dates: List[str],
                                time_step: str) -> None:
     """Prints a header of a function that generates data when it is running.
 
     :param function_name: name of the function that generates the data.
-    :param years: List of the interval of years to be analyzed
-     (i.e. ['1980', '2020']).
+    :param dates: List of the interval of dates to be analyzed
+     (i.e. ['1980-01', '2020-12']).
     :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :return: None -- The function prints a message and does not return a
      value.
@@ -108,18 +108,19 @@ def function_header_print_data(function_name: str, years: List[str],
     print(function_name)
 
     print(f'Computing the results of the data in the interval time from the '
-          + f'years {years[0]} to {years[1]} in time steps of {time_step}')
+          + f'years {dates[0]} to {dates[1]} in time steps of {time_step}')
     print()
 
 # -----------------------------------------------------------------------------
 
 
-def function_header_print_plot(function_name: str, years: List[str],
+def function_header_print_plot(function_name: str, dates: List[str],
                                time_step: str) -> None:
     """Prints a header of a function that generates a plot when it is running.
 
     :param function_name: name of the function that generates the data.
-    :param year: initial year of the analysis (i.e. '1980').
+    :param dates: List of the interval of dates to be analyzed
+     (i.e. ['1980-01', '2020-12']).
     :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :return: None -- The function prints a message and does not return a
      value.
@@ -129,7 +130,7 @@ def function_header_print_plot(function_name: str, years: List[str],
     print(function_name)
 
     print(f'Computing the plots of the data in the interval time from the '
-          + f'years {years[0]} to {years[1]} in time steps of {time_step}')
+          + f'years {dates[0]} to {dates[1]} in time steps of {time_step}')
     print()
 
 # -----------------------------------------------------------------------------
