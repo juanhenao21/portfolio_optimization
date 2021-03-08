@@ -33,19 +33,19 @@ import pandas as pd  # type: ignore
 # -----------------------------------------------------------------------------
 
 
-def save_data(data: pd.DataFrame, years: List[str], time_step: str) -> None:
+def save_data(data: pd.DataFrame, dates: List[str], time_step: str) -> None:
     """ Saves the data downloaded.
 
-    :param years: List of the interval of years to be analyzed
-     (i.e. ['1980', '2020']).
+    :param dates: List of the interval of dates to be analyzed
+     (i.e. ['1980-01', '2020-12']).
     :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :return: None -- The function prints a message and does not return a value.
     """
 
     # Saving data
 
-    pickle.dump(data, open(f'../data/original_data/original_data_{years[0]}'
-                           + f'_{years[1]}_step_{time_step}.pickle', 'wb'))
+    pickle.dump(data, open(f'../data/original_data/original_data_{dates[0]}'
+                           + f'_{dates[1]}_step_{time_step}.pickle', 'wb'))
 
     print('Data Saved')
     print()
@@ -54,13 +54,13 @@ def save_data(data: pd.DataFrame, years: List[str], time_step: str) -> None:
 
 
 def function_header_print_data(function_name: str, tickers: List[str],
-                               years: List[str], time_step: str) -> None:
+                               dates: List[str], time_step: str) -> None:
     """Prints a header of a function that generates data when it is running.
 
     :param function_name: name of the function that generates the data.
     :param ticker: string of the abbreviation of the stock to be analyzed
      (i.e. 'AAPL').
-    :param years: List of the interval of years to be analyzed
+    :param dates: List of the interval of dates to be analyzed
      (i.e. ['1980', '2020']).
     :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :return: None -- The function prints a message and does not return a value.
@@ -70,7 +70,7 @@ def function_header_print_data(function_name: str, tickers: List[str],
     print(function_name)
 
     print(f'Downloading data for the tickers {tickers} in the interval time'
-          + f' from the years {years[0]} to {years[1]} in time steps of'
+          + f' from the years {dates[0]} to {dates[1]} in time steps of'
           + f' {time_step}')
     print()
 
