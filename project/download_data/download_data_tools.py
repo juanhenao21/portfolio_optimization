@@ -61,7 +61,7 @@ def function_header_print_data(function_name: str, tickers: List[str],
     :param ticker: string of the abbreviation of the stock to be analyzed
      (i.e. 'AAPL').
     :param dates: List of the interval of dates to be analyzed
-     (i.e. ['1980', '2020']).
+     (i.e. ['1980-01', '2020-12']).
     :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :return: None -- The function prints a message and does not return a value.
     """

@@ -41,7 +41,7 @@ def portfolio_download_data(tickers: List[str], dates: List[str],
     :param tickers: list of the string abbreviation of the stocks to be
      analyzed (i.e. ['AAPL', 'MSFT']).
     :param dates: List of the interval of dates to be analyzed
-     (i.e. ['1980', '2020']).
+     (i.e. ['1980-01', '2020-12']).
     :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :return: None -- The function saves the data in a file and does not return
      a value.
