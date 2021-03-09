@@ -249,7 +249,7 @@ def correlation_matrix_plot(dates: List[str], time_step: str) -> None:
             f'../data/correlation_matrix/correlation_matrix_data_{dates[0]}'
             + f'_{dates[1]}_step_{time_step}.pickle', 'rb'))
 
-        sns.heatmap(correlations, vmin=-1, vmax=1)
+        sns.heatmap(correlations, cmap='Blues')#, vmin=-1, vmax=1)
 
         plt.title(f'Correlation matrix from {dates[0]} to {dates[1]} -'
                   + f' {time_step}', fontsize=30)
