@@ -1,21 +1,21 @@
-'''Portfolio optimization correlation matrix analysis module.
+'''Portfolio optimization local normalization analysis module.
 
-The functions in the module compute the returns, the normalized returns and the
-correlation matrix of financial time series.
+The functions in the module use local normalization to compute the returns, the
+normalized returns and the correlation matrix of financial time series.
 
 This script requires the following modules:
     * pickle
     * typing
     * pandas
-    * correlation_matrix_tools
+    * local_normalization_tools
 
 The module contains the following functions:
-    * returns_data - computes the returns of the time series.
-    * volatility_data - computes the volatility in a time window of the time
-     series.
-    * normalized_returns_data - normalizes the returns of the time series.
-    * correlation_matrix_data - computes the correlation matrix of the
-     normalized returns.
+    * ln_volatility_data - uses local normalization to compute the volatility
+      of the time series.
+    * ln_normalized_returns_data - uses local normalization to normalize the
+      returns of the time series.
+    * ln_correlation_matrix_data - uses local normalization to compute the
+      correlation matrix of the normalized returns.
     * main - the main function of the script.
 
 ..moduleauthor:: Juan Camilo Henao Londono <www.github.com/juanhenao21>
@@ -28,60 +28,25 @@ from typing import List
 
 import pandas as pd  # type: ignore
 
-import correlation_matrix_tools
+import local_normalization_tools
 
 # -----------------------------------------------------------------------------
 
 
-def returns_data(dates: List[str], time_step: str) -> None:
-    """Computes the returns of the time series.
+def ln_volatility_data(dates: List[str], time_step: str, window: str) -> None:
+    """Uses local normalization to compute the volatility of the time series.
 
     :param dates: List of the interval of dates to be analyzed
      (i.e. ['1980-01', '2020-12']).
-    :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
+    :param time_step: time step of the data (i.e. '1m', '2m', '5m').
+    :param window: window time to compute the volatility (i.e. '60').
     :return: None -- The function saves the data in a file and does not return
      a value.
     """
 
-    function_name: str = returns_data.__name__
-    correlation_matrix_tools \
-        .function_header_print_data(function_name, dates, time_step)
-
-    try:
-
-        # Load data
-        data: pd.DataFrame = pickle.load(open(
-            f'../data/original_data/original_data_{dates[0]}_{dates[1]}_step'
-            + f'_{time_step}.pickle', 'rb'))
-
-        returns_df: pd.DataFrame = data.pct_change().dropna()
-
-        # Saving data
-        correlation_matrix_tools \
-            .save_data(returns_df, function_name, dates, time_step)
-
-    except FileNotFoundError as error:
-        print('No data')
-        print(error)
-        print()
-
-# -----------------------------------------------------------------------------
-
-
-def volatility_data(dates: List[str], time_step: str, window: str) -> None:
-    """Computes the volatility in a time window of the time series.
-
-    :param dates: List of the interval of dates to be analyzed
-     (i.e. ['1980-01', '2020-12']).
-    :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
-    :param window: window time to compute the volatility (i.e. '60', ...).
-    :return: None -- The function saves the data in a file and does not return
-     a value.
-    """
-
-    function_name: str = volatility_data.__name__
-    correlation_matrix_tools \
-        .function_header_print_data(function_name, dates, time_step)
+    function_name: str = ln_volatility_data.__name__
+    local_normalization_tools \
+        .function_header_print_data(function_name, dates, time_step, window)
 
     try:
 
@@ -93,9 +58,8 @@ def volatility_data(dates: List[str], time_step: str, window: str) -> None:
         std_df: pd.DataFrame = data.rolling(window=int(window)).std().dropna()
 
         # Saving data
-        correlation_matrix_tools \
-            .save_data(std_df, function_name + f'_win_{window}', dates,
-                       time_step)
+        local_normalization_tools \
+            .save_data(std_df, function_name, dates, time_step, window)
 
     except FileNotFoundError as error:
         print('No data')
@@ -105,19 +69,21 @@ def volatility_data(dates: List[str], time_step: str, window: str) -> None:
 # -----------------------------------------------------------------------------
 
 
-def normalized_returns_data(years: List[str], time_step: str) -> None:
-    """Normalizes the returns of the time series.
+def ln_normalized_returns_data(years: List[str], time_step: str,
+                               window: str) -> None:
+    """Uses local normalization to normalize the returns of the time series.
 
     :param years: List of the interval of years to be analyzed
      (i.e. ['1980', '2020']).
     :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
+    :param window: window time to compute the volatility (i.e. '60').
     :return: None -- The function saves the data in a file and does not return
      a value.
     """
 
-    function_name: str = normalized_returns_data.__name__
-    correlation_matrix_tools \
-        .function_header_print_data(function_name, years, time_step)
+    function_name: str = ln_normalized_returns_data.__name__
+    local_normalization_tools \
+        .function_header_print_data(function_name, years, time_step, window)
 
     try:
 
@@ -126,11 +92,15 @@ def normalized_returns_data(years: List[str], time_step: str) -> None:
             f'../data/correlation_matrix/returns_data_{years[0]}_{years[1]}'
             + f'_step_{time_step}.pickle', 'rb'))
 
-        normalized_df: pd.DataFrame = (data - data.mean()) / data.std()
+        data_win = data.iloc[int(window) - 1:]
+        data_mean = data.rolling(window=int(window)).mean().dropna()
+        data_std = data.rolling(window=int(window)).std().dropna()
+
+        normalized_df: pd.DataFrame = (data_win - data_mean) / data_std
 
         # Saving data
-        correlation_matrix_tools \
-            .save_data(normalized_df, function_name, years, time_step)
+        local_normalization_tools \
+            .save_data(normalized_df, function_name, years, time_step, window)
 
     except FileNotFoundError as error:
         print('No data')
@@ -140,32 +110,35 @@ def normalized_returns_data(years: List[str], time_step: str) -> None:
 # -----------------------------------------------------------------------------
 
 
-def correlation_matrix_data(years: List[str], time_step: str) -> None:
-    """Computes the correlation matrix of the normalized returns.
+def ln_correlation_matrix_data(years: List[str], time_step: str,
+                               window: str) -> None:
+    """uses local normalization to compute the correlation matrix of the
+       normalized returns.
 
     :param years: List of the interval of years to be analyzed
      (i.e. ['1980', '2020']).
     :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
+    :param window: window time to compute the volatility (i.e. '60').
     :return: None -- The function saves the data in a file and does not return
      a value.
     """
 
-    function_name: str = correlation_matrix_data.__name__
-    correlation_matrix_tools \
-        .function_header_print_data(function_name, years, time_step)
+    function_name: str = ln_correlation_matrix_data.__name__
+    local_normalization_tools \
+        .function_header_print_data(function_name, years, time_step, window)
 
     try:
 
         # Load data
         data: pd.DataFrame = pickle.load(open(
-            f'../data/correlation_matrix/normalized_returns_data_{years[0]}'
-            + f'_{years[1]}_step_{time_step}.pickle', 'rb'))
+            f'../data/local_normalization/ln_normalized_returns_data_{years[0]}'
+            + f'_{years[1]}_step_{time_step}_win_{window}.pickle', 'rb'))
 
         corr_matrix_df: pd.DataFrame = data.corr()
 
         # Saving data
-        correlation_matrix_tools \
-            .save_data(corr_matrix_df, function_name, years, time_step)
+        local_normalization_tools \
+            .save_data(corr_matrix_df, function_name, years, time_step, window)
 
     except FileNotFoundError as error:
         print('No data')
