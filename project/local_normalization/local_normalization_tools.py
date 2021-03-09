@@ -1,4 +1,4 @@
-'''Portfolio optimization correlation matrix tools module.
+'''Portfolio optimization local normalization tools module.
 
 The functions in the module do small repetitive tasks, that are used along the
 whole implementation. These tools improve the way the tasks are standardized
@@ -37,18 +37,19 @@ import numpy as np  # type: ignore
 # -----------------------------------------------------------------------------
 
 
-def save_data(data: Any, function_name: str, dates: List[str],
-              time_step: str) -> None:
+def save_data(data: Any, function_name: str, dates: List[str], time_step: str,
+              window: str) -> None:
     """Saves computed data in pickle files.
 
     Saves the data generated in the functions of the
-    correlation_matrix_analysis module in pickle files.
+    local_normalization_analysis module in pickle files.
 
     :param data: data to be saved. The data can be of different types.
     :param function_name: name of the function that generates the plot.
     :param dates: List of the interval of dates to be analyzed
      (i.e. ['1980-01', '2020-12']).
     :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
+    :param window: window time to compute the volatility (i.e. '60').
     :return: None -- The function saves the data in a file and does not return
      a value.
     """
@@ -56,8 +57,8 @@ def save_data(data: Any, function_name: str, dates: List[str],
     # Saving data
 
     pickle.dump(data, open(
-        f'../data/correlation_matrix/{function_name}_{dates[0]}_{dates[1]}'
-                + f'_step_{time_step}.pickle', 'wb'))
+        f'../data/local_normalization/{function_name}_{dates[0]}_{dates[1]}'
+                + f'_step_{time_step}_win_{window}.pickle', 'wb'))
 
     print('Data Saved')
     print()
@@ -66,25 +67,26 @@ def save_data(data: Any, function_name: str, dates: List[str],
 
 
 def save_plot(figure: plt.Figure, function_name: str, dates: List[str],
-              time_step: str) -> None:
+              time_step: str, window: str) -> None:
     """Saves plot in png files.
 
     Saves the plot generated in the functions of the
-    correlation_matrix_analysis module in png files.
+    local_normalization_analysis module in png files.
 
     :param figure: figure object that is going to be save.
     :param function_name: name of the function that generates the plot.
     :param dates: List of the interval of dates to be analyzed
      (i.e. ['1980-01', '2020-12']).
     :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
+    :param window: window time to compute the volatility (i.e. '60').
     :return: None -- The function save the plot in a file and does not return
      a value.
     """
 
     # Saving plot data
 
-    figure.savefig(f'../plot/correlation_matrix/{function_name}_{dates[0]}'
-                   + f'_{dates[1]}_step_{time_step}.png')
+    figure.savefig(f'../plot/local_normalization/{function_name}_{dates[0]}'
+                   + f'_{dates[1]}_step_{time_step}_win_{window}.png')
 
     print('Plot Saved')
     print()
@@ -93,13 +95,14 @@ def save_plot(figure: plt.Figure, function_name: str, dates: List[str],
 
 
 def function_header_print_data(function_name: str, dates: List[str],
-                               time_step: str) -> None:
+                               time_step: str, window: str) -> None:
     """Prints a header of a function that generates data when it is running.
 
     :param function_name: name of the function that generates the data.
     :param dates: List of the interval of dates to be analyzed
      (i.e. ['1980-01', '2020-12']).
     :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
+    :param window: window time to compute the volatility (i.e. '60').
     :return: None -- The function prints a message and does not return a
      value.
     """
@@ -108,20 +111,22 @@ def function_header_print_data(function_name: str, dates: List[str],
     print(function_name)
 
     print(f'Computing the results of the data in the interval time from the '
-          + f'years {dates[0]} to {dates[1]} in time steps of {time_step}')
+          + f'years {dates[0]} to {dates[1]} in time steps of {time_step} '
+          + f'with a time window of {window}')
     print()
 
 # -----------------------------------------------------------------------------
 
 
 def function_header_print_plot(function_name: str, dates: List[str],
-                               time_step: str) -> None:
+                               time_step: str, window: str) -> None:
     """Prints a header of a function that generates a plot when it is running.
 
     :param function_name: name of the function that generates the data.
     :param dates: List of the interval of dates to be analyzed
      (i.e. ['1980-01', '2020-12']).
     :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
+    :param window: window time to compute the volatility (i.e. '60').
     :return: None -- The function prints a message and does not return a
      value.
     """
@@ -130,7 +135,8 @@ def function_header_print_plot(function_name: str, dates: List[str],
     print(function_name)
 
     print(f'Computing the plots of the data in the interval time from the '
-          + f'years {dates[0]} to {dates[1]} in time steps of {time_step}')
+          + f'years {dates[0]} to {dates[1]} in time steps of {time_step} '
+          + f'with a time window of {window}')
     print()
 
 # -----------------------------------------------------------------------------
@@ -143,8 +149,8 @@ def start_folders() -> None:
     """
 
     try:
-        os.mkdir(f'../data/correlation_matrix')
-        os.mkdir(f'../plot/correlation_matrix')
+        os.mkdir(f'../data/local_normalization')
+        os.mkdir(f'../plot/local_normalization')
         print('Folder to save data created')
         print()
 
@@ -163,9 +169,9 @@ def initial_message() -> None:
     """
 
     print()
-    print('##################')
-    print('Correlation Matrix')
-    print('##################')
+    print('###################')
+    print('Local Normalization')
+    print('###################')
     print('AG Guhr')
     print('Faculty of Physics')
     print('University of Duisburg-Essen')
