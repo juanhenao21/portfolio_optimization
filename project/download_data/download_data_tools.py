@@ -83,8 +83,8 @@ def start_folders() -> None:
     :return: None -- The function creates folders and does not return a value.
     """
     try:
-        os.mkdir(f'../data')
-        os.mkdir(f'../plot')
+        os.mkdir('../data')
+        os.mkdir('../plot')
         print('Folder to save data created')
         print()
 
@@ -94,7 +94,7 @@ def start_folders() -> None:
         print()
 
     try:
-        os.mkdir(f'../data/original_data')
+        os.mkdir('../data/original_data')
         print('Folder to save data created')
         print()
 
@@ -140,12 +140,17 @@ def get_stocks(sectors: List[str]) -> List:
     data = pd.read_html(
         'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies')[0]
 
+    data = data.sort_values(by=['GICS Sector'], ignore_index=True)
+
+    data = data.groupby(by=['GICS Sector']) \
+        .apply(lambda x: x.sort_values(by=['Security'], ignore_index=True))
+
     if sectors[0] == 'all':
-        stocks = list(data['Symbol'])
+        stocks = list(data['Symbol'].values)
     else:
         stocks = []
         for sector in sectors:
-            stocks.extend(list(data[data['GICS Sector'] == sector]['Symbol']))
+            stocks.extend(data[data['GICS Sector'] == sector]['Symbol'].values)
 
     return stocks
 
