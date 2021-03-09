@@ -1,15 +1,18 @@
-'''Portfolio optimization correlation matrix main module.
+'''Portfolio optimization local normalization main module.
 
 The functions in the module compute the returns and correlation matrix of
 financial time series.
 
 This script requires the following modules:
     * typing
-    * correlation_matrix_analysis
-    * correlation_matrix_plot
-    * correlation_matrix_tools
+    * multiprocessing
+    * itertools
+    * local_normalization_analysis
+    * local_normalization_plot
+    * local_normalization_tools
 
 The module contains the following functions:
+    * data_plot_generator
     * main - the main function of the script.
 
 .. moduleauthor:: Juan Camilo Henao Londono <www.github.com/juanhenao21>
@@ -22,18 +25,19 @@ from typing import List
 import multiprocessing as mp
 from itertools import product as iprod
 
-import correlation_matrix_analysis
-import correlation_matrix_plot
-import correlation_matrix_tools
+import local_normalization_analysis
+import local_normalization_plot
+import local_normalization_tools
 
 # -----------------------------------------------------------------------------
 
 
-def data_plot_generator(years: List[List[str]], time_step: List[str],
+def data_plot_generator(dates: List[List[str]], time_steps: List[str],
                         windows: List[str]) -> None:
     """Generates all the analysis and plots from the data.
-    :param years: list of the string of the year to be analyzed
-     (i.e. ['2016', '2017']).
+
+    :param dates: list of lists of the string of the dates to be analyzed
+     (i.e. [['1980-01', '2020-12'], ['1980-01', '2020-12']).
     :param time_steps: list of the string of the time step of the data
      (i.e. ['1m', '2m', '5m']).
     :param windows: list of the string of the windows to compute the volatility
@@ -45,29 +49,27 @@ def data_plot_generator(years: List[List[str]], time_step: List[str],
     # Parallel computing
     with mp.Pool(processes=mp.cpu_count()) as pool:
         # Specific functions
-        pool.starmap(correlation_matrix_analysis
-                     .returns_data, iprod(years, time_step))
-        pool.starmap(correlation_matrix_analysis
-                     .volatility_data, iprod(years, time_step, windows))
-        pool.starmap(correlation_matrix_analysis
-                     .returns_data, iprod(years, time_step))
-        pool.starmap(correlation_matrix_analysis
-                     .normalized_returns_data, iprod(years, time_step))
-        pool.starmap(correlation_matrix_analysis
-                     .correlation_matrix_data, iprod(years, time_step))
+        pool.starmap(local_normalization_analysis
+                     .ln_volatility_data, iprod(dates, time_steps, windows))
+        pool.starmap(local_normalization_analysis
+                     .ln_normalized_returns_data, iprod(dates, time_steps,
+                                                        windows))
+        pool.starmap(local_normalization_analysis
+                     .ln_correlation_matrix_data, iprod(dates, time_steps,
+                                                        windows))
 
         # Plot
-        pool.starmap(correlation_matrix_plot
-                     .returns_plot, iprod(years, time_step))
-        pool.starmap(correlation_matrix_plot
-                     .volatility_plot, iprod(years, time_step, windows))
-        pool.starmap(correlation_matrix_plot
-                     .normalized_returns_plot, iprod(years, time_step))
-        pool.starmap(correlation_matrix_plot
-                     .normalized_returns_distribution_plot,
-                     iprod(years, time_step))
-        pool.starmap(correlation_matrix_plot
-                     .correlation_matrix_plot, iprod(years, time_step))
+        pool.starmap(local_normalization_plot
+                     .ln_volatility_plot, iprod(dates, time_steps, windows))
+        pool.starmap(local_normalization_plot
+                     .ln_normalized_returns_plot, iprod(dates, time_steps,
+                                                        windows))
+        pool.starmap(local_normalization_plot
+                     .ln_normalized_returns_distribution_plot,
+                     iprod(dates, time_steps, windows))
+        pool.starmap(local_normalization_plot
+                     .ln_correlation_matrix_plot, iprod(dates, time_steps,
+                                                        windows))
 
 # -----------------------------------------------------------------------------
 
@@ -80,19 +82,19 @@ def main() -> None:
     :return: None.
     """
 
-    correlation_matrix_tools.initial_message()
+    local_normalization_tools.initial_message()
 
     # Initial year and time step
-    years: List[List[str]] = [['1980', '2020']]
+    dates: List[List[str]] = [['1980-01', '2020-12']]
     time_steps: List[str] = ['1d']
     windows: List[str] = ['60']
 
     # Basic folders
-    correlation_matrix_tools.start_folders()
+    local_normalization_tools.start_folders()
 
     # Run analysis
     # Analysis and plot
-    data_plot_generator(years, time_steps, windows)
+    data_plot_generator(dates, time_steps, windows)
 
     print('Ay vamos!!!')
 
