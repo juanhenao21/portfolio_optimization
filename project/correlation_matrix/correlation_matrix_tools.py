@@ -107,7 +107,7 @@ def function_header_print_data(function_name: str, dates: List[str],
     print('Portfolio Optimization')
     print(function_name)
 
-    print(f'Computing the results of the data in the interval time from the '
+    print('Computing the results of the data in the interval time from the '
           + f'years {dates[0]} to {dates[1]} in time steps of {time_step}')
     print()
 
@@ -129,7 +129,7 @@ def function_header_print_plot(function_name: str, dates: List[str],
     print('Portfolio Optimization')
     print(function_name)
 
-    print(f'Computing the plots of the data in the interval time from the '
+    print('Computing the plots of the data in the interval time from the '
           + f'years {dates[0]} to {dates[1]} in time steps of {time_step}')
     print()
 
@@ -143,8 +143,8 @@ def start_folders() -> None:
     """
 
     try:
-        os.mkdir(f'../data/correlation_matrix')
-        os.mkdir(f'../plot/correlation_matrix')
+        os.mkdir('../data/correlation_matrix')
+        os.mkdir('../plot/correlation_matrix')
         print('Folder to save data created')
         print()
 
