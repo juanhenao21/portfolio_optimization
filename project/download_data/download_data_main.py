@@ -5,9 +5,10 @@ in several intervals.
 
 This script requires the following modules:
     * typing
+    * calendar
+    * datetime
     * pandas
     * yfinance
-    * datetime
     * download_data_tools
 
 The module contains the following functions:
@@ -22,6 +23,7 @@ The module contains the following functions:
 
 from typing import List
 
+from calendar import monthrange
 from datetime import datetime as dt
 import pandas as pd  # type: ignore
 import yfinance as yf  # type: ignore
@@ -55,9 +57,10 @@ def portfolio_download_data(tickers: List[str], dates: List[str],
         init_month = int(dates[0].split('-')[1])
         fin_year = int(dates[1].split('-')[0])
         fin_month = int(dates[1].split('-')[1])
+        last_day = monthrange(fin_year, fin_month)[1]
 
         init_date: dt = dt(year=init_year, month=init_month, day=1)
-        fin_date: dt = dt(year=fin_year, month=fin_month, day=1)
+        fin_date: dt = dt(year=fin_year, month=fin_month, day=last_day)
 
         # Not all the periods can be combined with the time steps.
         raw_data: pd.DataFrame = \
@@ -91,8 +94,8 @@ def main() -> None:
     download_data_tools.initial_message()
 
     # S&P 500 companies, initial year and time step
-    stocks: List[str] = download_data_tools.get_stocks(['Financials'])
-    dates: List[str] = ['1980-01', '2020-12']
+    stocks: List[str] = download_data_tools.get_stocks(['all'])
+    dates: List[str] = ['2006-01', '2006-03']
     time_step: str = '1d'
 
     # Basic folders
