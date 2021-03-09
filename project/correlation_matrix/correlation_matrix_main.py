@@ -5,11 +5,14 @@ financial time series.
 
 This script requires the following modules:
     * typing
+    * multiprocessing
+    * itertools
     * correlation_matrix_analysis
     * correlation_matrix_plot
     * correlation_matrix_tools
 
 The module contains the following functions:
+    * data_plot_generator
     * main - the main function of the script.
 
 .. moduleauthor:: Juan Camilo Henao Londono <www.github.com/juanhenao21>
@@ -31,6 +34,7 @@ import correlation_matrix_tools
 
 def data_plot_generator(dates: List[List[str]], time_step: List[str]) -> None:
     """Generates all the analysis and plots from the data.
+
     :param dates: list of lists of the string of the dates to be analyzed
      (i.e. [['1980-01', '2020-12'], ['1980-01', '2020-12']).
     :param time_steps: list of the string of the time step of the data
@@ -42,8 +46,6 @@ def data_plot_generator(dates: List[List[str]], time_step: List[str]) -> None:
     # Parallel computing
     with mp.Pool(processes=mp.cpu_count()) as pool:
         # Specific functions
-        pool.starmap(correlation_matrix_analysis
-                     .returns_data, iprod(dates, time_step))
         pool.starmap(correlation_matrix_analysis
                      .returns_data, iprod(dates, time_step))
         pool.starmap(correlation_matrix_analysis
@@ -76,7 +78,7 @@ def main() -> None:
     correlation_matrix_tools.initial_message()
 
     # Initial year and time step
-    years: List[List[str]] = [['1980-01', '2020-12'], ['2005-10', '2005-12'],
+    dates: List[List[str]] = [['1980-01', '2020-12'], ['2005-10', '2005-12'],
                               ['2006-01', '2006-03']]
     time_steps: List[str] = ['1d']
 
@@ -85,7 +87,7 @@ def main() -> None:
 
     # Run analysis
     # Analysis and plot
-    data_plot_generator(years, time_steps)
+    data_plot_generator(dates, time_steps)
 
     print('Ay vamos!!!')
 
