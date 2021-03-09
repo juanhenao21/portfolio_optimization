@@ -4,7 +4,6 @@ The functions in the module download data from Yahoo! Finance for several years
 in several intervals.
 
 This script requires the following modules:
-    * os
     * typing
     * pandas
     * yfinance
@@ -21,12 +20,11 @@ The module contains the following functions:
 # -----------------------------------------------------------------------------
 # Modules
 
-import os
 from typing import List
 
+from datetime import datetime as dt
 import pandas as pd  # type: ignore
 import yfinance as yf  # type: ignore
-from datetime import datetime as dt
 
 import download_data_tools
 
@@ -65,6 +63,8 @@ def portfolio_download_data(tickers: List[str], dates: List[str],
         raw_data: pd.DataFrame = \
             yf.download(tickers=tickers, start=init_date, end=fin_date,
                         interval=time_step)['Adj Close']
+        # Order DataFrame columns by sector
+        raw_data = raw_data[tickers]
 
         if raw_data.isnull().values.any():
             # Remove stocks that do not have data from the initial date
