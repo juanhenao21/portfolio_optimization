@@ -167,7 +167,7 @@ def normalized_returns_distribution_plot(dates: List[str],
             .gaussian_distribution(0, 1, x_gauss)
 
         # Linear plot
-        plot = norm_returns_data.plot(kind='density', figsize=(16, 9))
+        plot_lin = norm_returns_data.plot(kind='density', figsize=(16, 9))
 
         plt.plot(x_gauss, gaussian, lw=5, label='Gaussian')
         plt.title(f'Normalized returns distribution from {dates[0]} to'
@@ -177,42 +177,45 @@ def normalized_returns_distribution_plot(dates: List[str],
         plt.ylabel('Counts', fontsize=25)
         plt.xticks(fontsize=15)
         plt.yticks(fontsize=15)
-        plt.xlim(-4, 4)
+        plt.xlim(-5, 5)
         plt.grid(True)
         plt.tight_layout()
-        figure: plt.Figure = plot.get_figure()
+        figure_lin: plt.Figure = plot_lin.get_figure()
 
         # Plotting
         correlation_matrix_tools \
-            .save_plot(figure, function_name + '_lin', dates, time_step)
+            .save_plot(figure_lin, function_name + '_lin', dates, time_step)
 
         plt.close()
-        del figure
+        del figure_lin
+        del plot_lin
 
         # Log plot
-        figure = plt.figure(figsize=(16, 9))
-        plt.hist(norm_returns_data, 100, (-5, 5), density=True, log=True,
-                 label=norm_returns_data.columns)
-        plt.plot(x_gauss, gaussian, lw=5, label='Gaussian')
+        plot_log = norm_returns_data.plot(kind='density', figsize=(16, 9),
+                                          logy=True)
+
+        plt.semilogy(x_gauss, gaussian, lw=5, label='Gaussian')
         plt.title(f'Normalized returns distribution from {dates[0]} to'
                   + f' {dates[1]} - {time_step}', fontsize=30)
-
-        plt.legend(loc='lower center', fontsize=20)
+        plt.legend(loc=1, fontsize=20)
         plt.xlabel('Returns', fontsize=25)
         plt.ylabel('Counts', fontsize=25)
         plt.xticks(fontsize=15)
         plt.yticks(fontsize=15)
-        # plt.xlim(-5, 5)
+        plt.xlim(-5, 5)
+        plt.ylim(10 ** -6, 10)
         plt.grid(True)
         plt.tight_layout()
+        figure_log: plt.Figure = plot_log.get_figure()
 
         # Plotting
         correlation_matrix_tools \
-            .save_plot(figure, function_name + '_log', dates, time_step)
+            .save_plot(figure_log, function_name + '_log', dates, time_step)
 
         plt.close()
         del norm_returns_data
-        del figure
+        del figure_log
+        del plot_log
         gc.collect()
 
     except FileNotFoundError as error:
@@ -279,8 +282,6 @@ def main() -> None:
 
     :return: None.
     """
-
-    normalized_returns_distribution_plot(['1980-01', '2020-12'], '1d')
 
 # -----------------------------------------------------------------------------
 

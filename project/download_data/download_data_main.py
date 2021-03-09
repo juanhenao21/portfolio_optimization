@@ -91,8 +91,8 @@ def main() -> None:
     download_data_tools.initial_message()
 
     # S&P 500 companies, initial year and time step
-    stocks: List[str] = download_data_tools.get_stocks(['all'])
-    dates: List[str] = ['2006-01', '2006-03']
+    stocks: List[str] = download_data_tools.get_stocks(['Financials'])
+    dates: List[str] = ['1980-01', '2020-12']
     time_step: str = '1d'
 
     # Basic folders
