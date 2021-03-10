@@ -16,6 +16,8 @@ The module contains the following functions:
       returns of the time series.
     * ln_correlation_matrix_data - uses local normalization to compute the
       correlation matrix of the normalized returns.
+    * ln_aggregated_dist_returns_data - uses local normalization to compute the
+      aggregated distribution of returns.
     * main - the main function of the script.
 
 ..moduleauthor:: Juan Camilo Henao Londono <www.github.com/juanhenao21>
@@ -26,6 +28,7 @@ The module contains the following functions:
 import pickle
 from typing import List
 
+import numpy as np
 import pandas as pd  # type: ignore
 
 import local_normalization_tools
@@ -69,12 +72,12 @@ def ln_volatility_data(dates: List[str], time_step: str, window: str) -> None:
 # -----------------------------------------------------------------------------
 
 
-def ln_normalized_returns_data(years: List[str], time_step: str,
+def ln_normalized_returns_data(dates: List[str], time_step: str,
                                window: str) -> None:
     """Uses local normalization to normalize the returns of the time series.
 
-    :param years: List of the interval of years to be analyzed
-     (i.e. ['1980', '2020']).
+    :param dates: List of the interval of dates to be analyzed
+     (i.e. ['1980-01', '2020-12']).
     :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :param window: window time to compute the volatility (i.e. '60').
     :return: None -- The function saves the data in a file and does not return
@@ -83,13 +86,13 @@ def ln_normalized_returns_data(years: List[str], time_step: str,
 
     function_name: str = ln_normalized_returns_data.__name__
     local_normalization_tools \
-        .function_header_print_data(function_name, years, time_step, window)
+        .function_header_print_data(function_name, dates, time_step, window)
 
     try:
 
         # Load data
         data: pd.DataFrame = pickle.load(open(
-            f'../data/correlation_matrix/returns_data_{years[0]}_{years[1]}'
+            f'../data/correlation_matrix/returns_data_{dates[0]}_{dates[1]}'
             + f'_step_{time_step}.pickle', 'rb'))
 
         data_win = data.iloc[int(window) - 1:]
@@ -100,7 +103,7 @@ def ln_normalized_returns_data(years: List[str], time_step: str,
 
         # Saving data
         local_normalization_tools \
-            .save_data(normalized_df, function_name, years, time_step, window)
+            .save_data(normalized_df, function_name, dates, time_step, window)
 
     except FileNotFoundError as error:
         print('No data')
@@ -110,13 +113,13 @@ def ln_normalized_returns_data(years: List[str], time_step: str,
 # -----------------------------------------------------------------------------
 
 
-def ln_correlation_matrix_data(years: List[str], time_step: str,
+def ln_correlation_matrix_data(dates: List[str], time_step: str,
                                window: str) -> None:
     """uses local normalization to compute the correlation matrix of the
        normalized returns.
 
-    :param years: List of the interval of years to be analyzed
-     (i.e. ['1980', '2020']).
+    :param dates: List of the interval of dates to be analyzed
+     (i.e. ['1980-01', '2020-12']).
     :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
     :param window: window time to compute the volatility (i.e. '60').
     :return: None -- The function saves the data in a file and does not return
@@ -125,20 +128,20 @@ def ln_correlation_matrix_data(years: List[str], time_step: str,
 
     function_name: str = ln_correlation_matrix_data.__name__
     local_normalization_tools \
-        .function_header_print_data(function_name, years, time_step, window)
+        .function_header_print_data(function_name, dates, time_step, window)
 
     try:
 
         # Load data
         data: pd.DataFrame = pickle.load(open(
-            f'../data/local_normalization/ln_normalized_returns_data_{years[0]}'
-            + f'_{years[1]}_step_{time_step}_win_{window}.pickle', 'rb'))
+            f'../data/local_normalization/ln_normalized_returns_data_{dates[0]}'
+            + f'_{dates[1]}_step_{time_step}_win_{window}.pickle', 'rb'))
 
         corr_matrix_df: pd.DataFrame = data.corr()
 
         # Saving data
         local_normalization_tools \
-            .save_data(corr_matrix_df, function_name, years, time_step, window)
+            .save_data(corr_matrix_df, function_name, dates, time_step, window)
 
     except FileNotFoundError as error:
         print('No data')
@@ -153,6 +156,98 @@ def ln_correlation_matrix_data(years: List[str], time_step: str,
 # ----------------------------------------------------------------------------
 
 
+def ln_aggregated_dist_returns_data(dates: List[str], time_step: str,
+                                    window: str) -> None:
+    """Uses local normalization to compute the aggregated distribution of
+       returns.
+
+    :param dates: List of the interval of dates to be analyzed
+     (i.e. ['1980-01', '2020-12']).
+    :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
+    :param window: window time to compute the volatility (i.e. '60').
+    :return: None -- The function saves the data in a file and does not return
+     a value.
+    """
+
+    function_name: str = ln_aggregated_dist_returns_data.__name__
+    local_normalization_tools \
+        .function_header_print_data(function_name, dates, time_step, window)
+
+    try:
+
+        # Load data
+        data: pd.DataFrame = pickle.load(open(
+            f'../data/correlation_matrix/returns_data_{dates[0]}_{dates[1]}'
+            + f'_step_{time_step}.pickle', 'rb'))
+
+        print(data)
+        two_col = data[['PEP', 'CLX']]
+        cov_two_col = two_col.cov()
+        eVa, eVe = np.linalg.eig(cov_two_col)
+        print(eVa, eVe)
+
+        two_col = data[['CLX', 'PEP']]
+        cov_two_col = two_col.cov()
+        eVa, eVe = np.linalg.eig(cov_two_col)
+        print(eVa, eVe)
+
+        # yyy = pd.DataFrame()
+        # for col1 in data.columns:
+        #     for col2 in data.columns:
+
+        #         if col1 == col2:
+        #             pass
+        #         else:
+        #             two_col = data[[col1, col2]]
+        #             cov_two_col = two_col.cov()
+        #             eVa, eVe = np.linalg.eig(cov_two_col)
+
+        #             # R: rotation, S: scaling
+        #             # eVe:  eigenvector, eVa: eigenvalues
+        #             R, S = eVe, np.diag(np.sqrt(eVa))
+        #             # T: transformation matrix
+        #             # T = R . S
+        #             T = R.dot(S).T
+
+        #             trans_two_col = two_col.dot(np.linalg.inv(T))
+        #             trans_two_col.columns = two_col.columns
+
+        #             xxx = trans_two_col[col1].append(trans_two_col[col2], ignore_index=True)
+
+        #             yyy = yyy.append(xxx, ignore_index=True)
+
+        # from matplotlib import pyplot as plt
+
+        # x_gauss: np.ndarray = np.arange(-6, 6, 0.001)
+        # gaussian: np.ndarray = local_normalization_tools \
+        #     .gaussian_distribution(0, 1, x_gauss)
+
+        # plot_log = yyy.plot(kind='density', figsize=(16, 9),
+        #                                   logy=True, legend=False)
+        # plt.semilogy(x_gauss, gaussian, lw=5)
+        # plt.xlim(-5, 5)
+        # plt.ylim(10 ** -5, 10)
+        # figure_log: plt.Figure = plot_log.get_figure()
+        # plt.show()
+
+        # corr_matrix_df: pd.DataFrame = data.corr()
+
+        # Saving data
+        # local_normalization_tools \
+        #     .save_data(corr_matrix_df, function_name, dates, time_step, window)
+
+    except FileNotFoundError as error:
+        print('No data')
+        print(error)
+        print()
+
+    except TypeError as error:
+        print('To compute the correlation is needed at least to stocks')
+        print(error)
+        print()
+
+# ----------------------------------------------------------------------------
+
 def main() -> None:
     """The main function of the script.
 
@@ -160,6 +255,12 @@ def main() -> None:
 
     :return: None.
     """
+
+    dates = ['1992-01', '2012-12']
+    time_step = '1d'
+    window = '25'
+
+    ln_aggregated_dist_returns_data(dates, time_step, window)
 
 # -----------------------------------------------------------------------------
 
