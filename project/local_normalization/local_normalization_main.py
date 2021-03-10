@@ -85,7 +85,7 @@ def main() -> None:
     local_normalization_tools.initial_message()
 
     # Initial year and time step
-    dates: List[List[str]] = [['1980-01', '2020-12']]
+    dates: List[List[str]] = [['1992-01', '2012-12']]
     time_steps: List[str] = ['1d']
     windows: List[str] = ['60']
 

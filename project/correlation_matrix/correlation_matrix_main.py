@@ -78,8 +78,7 @@ def main() -> None:
     correlation_matrix_tools.initial_message()
 
     # Initial year and time step
-    dates: List[List[str]] = [['1980-01', '2020-12'], ['2005-10', '2005-12'],
-                              ['2006-01', '2006-03']]
+    dates: List[List[str]] = [['1992-01', '2012-12']]
     time_steps: List[str] = ['1d']
 
     # Basic folders

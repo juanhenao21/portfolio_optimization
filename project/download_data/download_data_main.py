@@ -95,7 +95,7 @@ def main() -> None:
 
     # S&P 500 companies, initial year and time step
     stocks: List[str] = download_data_tools.get_stocks(['all'])
-    dates: List[str] = ['2006-01', '2006-03']
+    dates: List[str] = ['1992-01', '2012-12']
     time_step: str = '1d'
 
     # Basic folders
