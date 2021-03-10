@@ -69,8 +69,6 @@ def returns_plot(dates: List[str], time_step: str) -> None:
 
         _ = [ax.set_ylabel('Returns', fontsize=20) for ax in plot]
         _ = [plot.legend(loc=1, fontsize=20) for plot in plt.gcf().axes]
-        plt.title(f'Returns from {dates[0]} to {dates[1]} - {time_step}',
-                  fontsize=30)
         plt.xlabel(f'Date - {time_step}', fontsize=20)
         plt.tight_layout(pad=0.5)
         figure: plt.Figure = plot[0].get_figure()

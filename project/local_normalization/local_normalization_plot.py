@@ -75,8 +75,6 @@ def ln_volatility_plot(dates: List[str], time_step: str, window: str) -> None:
 
         _ = [ax.set_ylabel('Volatility', fontsize=20) for ax in plot_vol]
         _ = [plot.legend(loc=1, fontsize=20) for plot in plt.gcf().axes]
-        plt.title(f'Local normalized volatility from {dates[0]} to {dates[1]}'
-                  + f' - {time_step} - time window {window}', fontsize=30)
         plt.xlabel(f'Date - {time_step} - time window {window}', fontsize=20)
         plt.tight_layout(pad=0.5)
         figure_vol: plt.Figure = plot_vol[0].get_figure()
@@ -127,8 +125,6 @@ def ln_volatility_one_stock_plot(dates: List[str], time_step: str,
 
         plot_vol: np.ndarray = volatility_data.plot(figsize=(16, 9), grid=True)
 
-        plt.title(f'Local normalized volatility from {dates[0]} to {dates[1]}',
-                  fontsize=30)
         plt.legend(loc=1, fontsize=20)
         plt.xlabel(f'Date - {time_step} - window {window}', fontsize=20)
         plt.ylabel(f'Volatility', fontsize=20)
@@ -325,7 +321,7 @@ def ln_correlation_matrix_plot(dates: List[str], time_step: str,
             + f'_{dates[0]}_{dates[1]}_step_{time_step}_win_{window}.pickle',
             'rb'))
 
-        sns.heatmap(correlations, cmap='Blues', vmin=-1, vmax=1)
+        sns.heatmap(correlations, cmap='Blues') #, vmin=-1, vmax=1)
 
         plt.title(f'Local norm. corr. matrix {dates[0]} to'
                   + f' {dates[1]} - {time_step} - window {window}',
