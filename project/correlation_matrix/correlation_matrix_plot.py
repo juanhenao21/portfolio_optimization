@@ -19,6 +19,8 @@ The module contains the following functions:
     * normalized_returns_distribution_plot - plots the normalized returns
       distribution of five stocks.
     * matrix_correlation_plot - plots the correlation matrix.
+    * aggregated_dist_returns_market_plot - plots the aggregated distribution
+      of returns for a market.
     * main - the main function of the script.
 
 .. moduleauthor:: Juan Camilo Henao Londono <www.github.com/juanhenao21>
@@ -247,7 +249,7 @@ def correlation_matrix_plot(dates: List[str], time_step: str) -> None:
             f'../data/correlation_matrix/correlation_matrix_data_{dates[0]}'
             + f'_{dates[1]}_step_{time_step}.pickle', 'rb'))
 
-        sns.heatmap(correlations, cmap='Blues')#, vmin=-1, vmax=1)
+        sns.heatmap(correlations, cmap='Blues')  # , vmin=-1, vmax=1)
 
         plt.title(f'Correlation matrix from {dates[0]} to {dates[1]} -'
                   + f' {time_step}', fontsize=30)
@@ -273,6 +275,67 @@ def correlation_matrix_plot(dates: List[str], time_step: str) -> None:
 # -----------------------------------------------------------------------------
 
 
+def aggregated_dist_returns_market_plot(dates: List[str],
+                                        time_step: str) -> None:
+    """Plots the aggregated distribution of returns for a market.
+
+    :param dates: List of the interval of dates to be analyzed
+     (i.e. ['1980-01', '2020-12']).
+    :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
+    :return: None -- The function saves the plot in a file and does not return
+     a value.
+    """
+
+    function_name: str = aggregated_dist_returns_market_plot.__name__
+    correlation_matrix_tools \
+        .function_header_print_plot(function_name, dates, time_step)
+
+    try:
+
+        # Load data
+        agg_returns_data: pd.Series = pickle.load(open(
+            '../data/correlation_matrix/aggregated_dist_returns_market_data'
+            + f'_{dates[0]}_{dates[1]}_step_{time_step}.pickle', 'rb'))[::2]
+
+        x_gauss: np.ndarray = np.arange(-6, 6, 0.001)
+        gaussian: np.ndarray = correlation_matrix_tools \
+            .gaussian_distribution(0, 1, x_gauss)
+
+        # Log plot
+        plot_log = agg_returns_data.plot(kind='density', style='o', logy=True,
+                                         figsize=(16, 9), legend=False)
+
+        plt.semilogy(x_gauss, gaussian, lw=5)
+        plt.title(f'Aggregated distribution returns from {dates[0]} to'
+                  + f' {dates[1]} - {time_step}', fontsize=30)
+        plt.xlabel('Aggregated returns', fontsize=25)
+        plt.ylabel('Counts', fontsize=25)
+        plt.xticks(fontsize=15)
+        plt.yticks(fontsize=15)
+        plt.xlim(-5, 5)
+        plt.ylim(10 ** -5, 10)
+        plt.grid(True)
+        plt.tight_layout()
+        figure_log: plt.Figure = plot_log.get_figure()
+
+        # Plotting
+        correlation_matrix_tools \
+            .save_plot(figure_log, function_name + '_log', dates, time_step)
+
+        plt.close()
+        del agg_returns_data
+        del figure_log
+        del plot_log
+        gc.collect()
+
+    except FileNotFoundError as error:
+        print('No data')
+        print(error)
+        print()
+
+# -----------------------------------------------------------------------------
+
+
 def main() -> None:
     """The main function of the script.
 
@@ -280,6 +343,8 @@ def main() -> None:
 
     :return: None.
     """
+
+    aggregated_dist_returns_market_plot(['1992-01', '2012-12'], '1d')
 
 # -----------------------------------------------------------------------------
 

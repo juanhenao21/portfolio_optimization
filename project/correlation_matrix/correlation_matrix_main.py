@@ -32,7 +32,7 @@ import correlation_matrix_tools
 # -----------------------------------------------------------------------------
 
 
-def data_plot_generator(dates: List[List[str]], time_step: List[str]) -> None:
+def data_plot_generator(dates: List[List[str]], time_steps: List[str]) -> None:
     """Generates all the analysis and plots from the data.
 
     :param dates: list of lists of the string of the dates to be analyzed
@@ -47,22 +47,30 @@ def data_plot_generator(dates: List[List[str]], time_step: List[str]) -> None:
     with mp.Pool(processes=mp.cpu_count()) as pool:
         # Specific functions
         pool.starmap(correlation_matrix_analysis
-                     .returns_data, iprod(dates, time_step))
+                     .returns_data, iprod(dates, time_steps))
         pool.starmap(correlation_matrix_analysis
-                     .normalized_returns_data, iprod(dates, time_step))
+                     .normalized_returns_data, iprod(dates, time_steps))
         pool.starmap(correlation_matrix_analysis
-                     .correlation_matrix_data, iprod(dates, time_step))
+                     .correlation_matrix_data, iprod(dates, time_steps))
 
         # Plot
         pool.starmap(correlation_matrix_plot
-                     .returns_plot, iprod(dates, time_step))
+                     .returns_plot, iprod(dates, time_steps))
         pool.starmap(correlation_matrix_plot
-                     .normalized_returns_plot, iprod(dates, time_step))
+                     .normalized_returns_plot, iprod(dates, time_steps))
         pool.starmap(correlation_matrix_plot
                      .normalized_returns_distribution_plot,
-                     iprod(dates, time_step))
+                     iprod(dates, time_steps))
         pool.starmap(correlation_matrix_plot
-                     .correlation_matrix_plot, iprod(dates, time_step))
+                     .correlation_matrix_plot, iprod(dates, time_steps))
+
+
+    # for date in dates:
+    #     for time_step in time_steps:
+    #         correlation_matrix_analysis \
+    #             .aggregated_dist_returns_market_data(date, time_step)
+    #         correlation_matrix_plot \
+    #             .aggregated_dist_returns_market_plot(date, time_step)
 
 # -----------------------------------------------------------------------------
 
