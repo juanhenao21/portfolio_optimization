@@ -206,7 +206,6 @@ def aggregated_dist_returns_market_data(dates: List[str],
     :param dates: List of the interval of dates to be analyzed
      (i.e. ['1980-01', '2020-12']).
     :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
-    :param window: window time to compute the volatility (i.e. '60').
     :return: None -- The function saves the data in a file and does not return
      a value.
     """
@@ -220,12 +219,12 @@ def aggregated_dist_returns_market_data(dates: List[str],
         # Load data
         stocks_name: pd.DataFrame = pickle.load(open(
             f'../data/correlation_matrix/returns_data_{dates[0]}_{dates[1]}'
-            + f'_step_{time_step}.pickle', 'rb'))
+            + f'_step_{time_step}.pickle', 'rb')).columns
 
         agg_ret_mkt_list: List[pd.Series] = []
 
-        stocks_perm: Iterator[Tuple[Any, ...]] = icomb(stocks_name, 2)
-        args_prod: Iterator[Any] = iprod([dates], [time_step], stocks_perm)
+        stocks_comb: Iterator[Tuple[Any, ...]] = icomb(stocks_name, 2)
+        args_prod: Iterator[Any] = iprod([dates], [time_step], stocks_comb)
 
         with mp.Pool(processes=mp.cpu_count()) as pool:
             agg_ret_mkt_list.extend(pool.starmap(

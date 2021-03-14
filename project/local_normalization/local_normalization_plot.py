@@ -69,9 +69,9 @@ def ln_volatility_plot(dates: List[str], time_step: str, window: str) -> None:
                         + f'_{dates[0]}_{dates[1]}_step_{time_step}_win'
                         + f'_{window}.pickle', 'rb')).iloc[:, :5]
 
-        plot_vol: np.ndarray = volatility_data.plot(subplots=True, sharex=True,
-                                                figsize=(16, 16), grid=True,
-                                                sort_columns=True)
+        plot_vol: np.ndarray = volatility_data \
+            .plot(subplots=True, sharex=True, figsize=(16, 16), grid=True,
+                  sort_columns=True)
 
         _ = [ax.set_ylabel('Volatility', fontsize=20) for ax in plot_vol]
         _ = [plot.legend(loc=1, fontsize=20) for plot in plt.gcf().axes]
@@ -321,7 +321,7 @@ def ln_correlation_matrix_plot(dates: List[str], time_step: str,
             + f'_{dates[0]}_{dates[1]}_step_{time_step}_win_{window}.pickle',
             'rb'))
 
-        sns.heatmap(correlations, cmap='Blues') #, vmin=-1, vmax=1)
+        sns.heatmap(correlations, cmap='Blues')  # , vmin=-1, vmax=1)
 
         plt.title(f'Local norm. corr. matrix {dates[0]} to'
                   + f' {dates[1]} - {time_step} - window {window}',
@@ -338,6 +338,72 @@ def ln_correlation_matrix_plot(dates: List[str], time_step: str,
         plt.close()
         del correlations
         del figure
+        gc.collect()
+
+    except FileNotFoundError as error:
+        print('No data')
+        print(error)
+        print()
+
+# -----------------------------------------------------------------------------
+
+
+def ln_aggregated_dist_returns_market_plot(dates: List[str], time_step: str,
+                                           window: str) -> None:
+    """Plots the aggregated distribution of returns for a market.
+
+    :param dates: List of the interval of dates to be analyzed
+     (i.e. ['1980-01', '2020-12']).
+    :param time_step: time step of the data (i.e. '1m', '2m', '5m', ...).
+    :param window: window time to compute the volatility (i.e. '60', ...).
+    :return: None -- The function saves the plot in a file and does not return
+     a value.
+    """
+
+    function_name: str = ln_aggregated_dist_returns_market_plot.__name__
+    local_normalization_tools \
+        .function_header_print_plot(function_name, dates, time_step, window)
+
+    try:
+
+        # Load data
+        agg_returns_data: pd.Series = pickle.load(open(
+            '../data/local_normalization/ln_aggregated_dist_returns_market'
+            + f'_data_{dates[0]}_{dates[1]}_step_{time_step}_win_{window}'
+            + f'.pickle', 'rb'))
+
+        print(agg_returns_data)
+        print(agg_returns_data.min())
+        x_gauss: np.ndarray = np.arange(-6, 6, 0.001)
+        gaussian: np.ndarray = local_normalization_tools \
+            .gaussian_distribution(0, 1, x_gauss)
+
+        # Log plot
+        plot_log = agg_returns_data.plot(kind='density', style='o', logy=True,
+                                         figsize=(16, 9), legend=False)
+
+        plt.semilogy(x_gauss, gaussian, lw=5)
+        plt.title(f'Local norm. dist. returns from {dates[0]} to'
+                  + f' {dates[1]} - {time_step}', fontsize=30)
+        plt.xlabel(f'Aggregated returns - window {window}', fontsize=25)
+        plt.ylabel('Counts', fontsize=25)
+        plt.xticks(fontsize=15)
+        plt.yticks(fontsize=15)
+        # plt.xlim(-5, 5)
+        # plt.ylim(10 ** -5, 10)
+        plt.grid(True)
+        plt.tight_layout()
+        figure_log: plt.Figure = plot_log.get_figure()
+
+        # Plotting
+        local_normalization_tools \
+            .save_plot(figure_log, function_name + '_log', dates, time_step,
+                       window)
+
+        plt.close()
+        del agg_returns_data
+        del figure_log
+        del plot_log
         gc.collect()
 
     except FileNotFoundError as error:
