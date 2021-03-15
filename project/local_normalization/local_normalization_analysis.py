@@ -208,6 +208,14 @@ def ln_aggregated_dist_returns_pair_data(dates: List[str], time_step: str,
                 trans_two_col = local_data_df.dot(np.linalg.inv(trans))
                 trans_two_col.columns = [cols[0], cols[1]]
 
+                # print('Bef')
+                # print(trans_two_col.head())
+                # print(eig_val)
+
+                # print('Aft')
+                # trans_two_col_norm = trans_two_col.div(np.sqrt(eig_val), axis=1)
+                # print(trans_two_col_norm.head())
+
                 one_col = trans_two_col[cols[0]].append(trans_two_col[cols[1]],
                                                         ignore_index=True)
 
@@ -291,6 +299,8 @@ def main() -> None:
 
     :return: None.
     """
+
+    ln_aggregated_dist_returns_pair_data(['1992-01', '2012-12'], '1d', ['AAPL', 'MSFT'], '25')
 
 
 # -----------------------------------------------------------------------------
