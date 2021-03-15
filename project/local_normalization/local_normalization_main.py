@@ -47,29 +47,29 @@ def data_plot_generator(dates: List[List[str]], time_steps: List[str],
     """
 
     # Parallel computing
-    with mp.Pool(processes=mp.cpu_count()) as pool:
-        # Specific functions
-        pool.starmap(local_normalization_analysis
-                     .ln_volatility_data, iprod(dates, time_steps, windows))
-        pool.starmap(local_normalization_analysis
-                     .ln_normalized_returns_data, iprod(dates, time_steps,
-                                                        windows))
-        pool.starmap(local_normalization_analysis
-                     .ln_correlation_matrix_data, iprod(dates, time_steps,
-                                                        windows))
+    # with mp.Pool(processes=mp.cpu_count()) as pool:
+    #     # Specific functions
+    #     pool.starmap(local_normalization_analysis
+    #                  .ln_volatility_data, iprod(dates, time_steps, windows))
+    #     pool.starmap(local_normalization_analysis
+    #                  .ln_normalized_returns_data, iprod(dates, time_steps,
+    #                                                     windows))
+    #     pool.starmap(local_normalization_analysis
+    #                  .ln_correlation_matrix_data, iprod(dates, time_steps,
+    #                                                     windows))
 
-        # Plot
-        pool.starmap(local_normalization_plot
-                     .ln_volatility_plot, iprod(dates, time_steps, windows))
-        pool.starmap(local_normalization_plot
-                     .ln_normalized_returns_plot, iprod(dates, time_steps,
-                                                        windows))
-        pool.starmap(local_normalization_plot
-                     .ln_normalized_returns_distribution_plot,
-                     iprod(dates, time_steps, windows))
-        pool.starmap(local_normalization_plot
-                     .ln_correlation_matrix_plot, iprod(dates, time_steps,
-                                                        windows))
+    #     # Plot
+    #     pool.starmap(local_normalization_plot
+    #                  .ln_volatility_plot, iprod(dates, time_steps, windows))
+    #     pool.starmap(local_normalization_plot
+    #                  .ln_normalized_returns_plot, iprod(dates, time_steps,
+    #                                                     windows))
+    #     pool.starmap(local_normalization_plot
+    #                  .ln_normalized_returns_distribution_plot,
+    #                  iprod(dates, time_steps, windows))
+    #     pool.starmap(local_normalization_plot
+    #                  .ln_correlation_matrix_plot, iprod(dates, time_steps,
+    #                                                     windows))
 
     for date in dates:
         for time_step in time_steps:

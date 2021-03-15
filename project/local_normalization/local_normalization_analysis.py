@@ -29,7 +29,7 @@ The module contains the following functions:
 # Modules
 
 from itertools import product as iprod
-from itertools import combinations as icomb
+from itertools import permutations as iperm
 import multiprocessing as mp
 import pickle
 from typing import Any, Iterator, List, Tuple
@@ -266,8 +266,8 @@ def ln_aggregated_dist_returns_market_data(dates: List[str], time_step: str,
 
         agg_ret_mkt_list: List[float] = []
 
-        stocks_comb: Iterator[Tuple[Any, ...]] = icomb(stocks_name, 2)
-        args_prod: Iterator[Any] = iprod([dates], [time_step], stocks_comb,
+        stocks_perm: Iterator[Tuple[Any, ...]] = iperm(stocks_name, 2)
+        args_prod: Iterator[Any] = iprod([dates], [time_step], stocks_perm,
                                          [window])
 
         with mp.Pool(processes=mp.cpu_count()) as pool:
