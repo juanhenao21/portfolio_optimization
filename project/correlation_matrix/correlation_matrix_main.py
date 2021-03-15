@@ -65,12 +65,12 @@ def data_plot_generator(dates: List[List[str]], time_steps: List[str]) -> None:
                      .correlation_matrix_plot, iprod(dates, time_steps))
 
 
-    # for date in dates:
-    #     for time_step in time_steps:
-    #         correlation_matrix_analysis \
-    #             .aggregated_dist_returns_market_data(date, time_step)
-    #         correlation_matrix_plot \
-    #             .aggregated_dist_returns_market_plot(date, time_step)
+    for date in dates:
+        for time_step in time_steps:
+            correlation_matrix_analysis \
+                .aggregated_dist_returns_market_data(date, time_step)
+            correlation_matrix_plot \
+                .aggregated_dist_returns_market_plot(date, time_step)
 
 # -----------------------------------------------------------------------------
 

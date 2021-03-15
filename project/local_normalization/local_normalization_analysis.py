@@ -165,7 +165,7 @@ def ln_correlation_matrix_data(dates: List[str], time_step: str,
 
 def ln_aggregated_dist_returns_pair_data(dates: List[str], time_step: str,
                                          cols: List[str],
-                                         window: str) -> pd.Series:
+                                         window: str) -> List[float]:
     """Uses local normalization to compute the aggregated distribution of
        returns for a pair of stocks.
 
@@ -184,7 +184,7 @@ def ln_aggregated_dist_returns_pair_data(dates: List[str], time_step: str,
             f'../data/correlation_matrix/returns_data_{dates[0]}_{dates[1]}'
             + f'_step_{time_step}.pickle', 'rb'))[[cols[0], cols[1]]]
 
-        agg_ret_mkt_list: List[pd.Series] = []
+        agg_ret_mkt_list: List[float] = []
 
         two_col['DateCol'] = two_col.index
         two_col['Group'] = two_col.groupby(
@@ -223,7 +223,7 @@ def ln_aggregated_dist_returns_pair_data(dates: List[str], time_step: str,
 
         del two_col
 
-        return pd.Series(agg_ret_mkt_list)
+        return agg_ret_mkt_list
 
     except FileNotFoundError as error:
         print('No data')
@@ -254,9 +254,9 @@ def ln_aggregated_dist_returns_market_data(dates: List[str], time_step: str,
         # Load data
         stocks_name: pd.DataFrame = pickle.load(open(
             f'../data/correlation_matrix/returns_data_{dates[0]}_{dates[1]}'
-            + f'_step_{time_step}.pickle', 'rb')).columns[:10]
+            + f'_step_{time_step}.pickle', 'rb')).columns
 
-        agg_ret_mkt_list: List[pd.Series] = []
+        agg_ret_mkt_list: List[float] = []
 
         stocks_comb: Iterator[Tuple[Any, ...]] = icomb(stocks_name, 2)
         args_prod: Iterator[Any] = iprod([dates], [time_step], stocks_comb,
@@ -266,7 +266,7 @@ def ln_aggregated_dist_returns_market_data(dates: List[str], time_step: str,
             agg_ret_mkt_list.extend(pool.starmap(
                 ln_aggregated_dist_returns_pair_data, args_prod))
 
-        agg_ret_mkt_series = pd.concat(agg_ret_mkt_list, ignore_index=True)
+        agg_ret_mkt_series: pd.Series = pd.Series(agg_ret_mkt_list[0])
 
         # Saving data
         local_normalization_tools \
@@ -292,13 +292,6 @@ def main() -> None:
     :return: None.
     """
 
-    dates = ['1992-01', '2012-12']
-    time_step = '1d'
-    cols = ['AAPL', 'MSFT', 'T']
-    window = '25'
-
-    ln_aggregated_dist_returns_pair_data(dates, time_step, cols, window)
-    # ln_aggregated_dist_returns_market_data(dates, time_step, window)
 
 # -----------------------------------------------------------------------------
 

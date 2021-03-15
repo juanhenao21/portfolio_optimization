@@ -370,10 +370,8 @@ def ln_aggregated_dist_returns_market_plot(dates: List[str], time_step: str,
         agg_returns_data: pd.Series = pickle.load(open(
             '../data/local_normalization/ln_aggregated_dist_returns_market'
             + f'_data_{dates[0]}_{dates[1]}_step_{time_step}_win_{window}'
-            + f'.pickle', 'rb'))
+            + f'.pickle', 'rb'))[::2]
 
-        print(agg_returns_data)
-        print(agg_returns_data.min())
         x_gauss: np.ndarray = np.arange(-6, 6, 0.001)
         gaussian: np.ndarray = local_normalization_tools \
             .gaussian_distribution(0, 1, x_gauss)
@@ -389,8 +387,8 @@ def ln_aggregated_dist_returns_market_plot(dates: List[str], time_step: str,
         plt.ylabel('Counts', fontsize=25)
         plt.xticks(fontsize=15)
         plt.yticks(fontsize=15)
-        # plt.xlim(-5, 5)
-        # plt.ylim(10 ** -5, 10)
+        plt.xlim(-5, 5)
+        plt.ylim(10 ** -5, 10)
         plt.grid(True)
         plt.tight_layout()
         figure_log: plt.Figure = plot_log.get_figure()
