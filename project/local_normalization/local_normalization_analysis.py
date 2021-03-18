@@ -199,22 +199,14 @@ def ln_aggregated_dist_returns_pair_data(dates: List[str], time_step: str,
             eig_val, eig_vec = np.linalg.eig(cov_two_col)
 
             # rot: rotation, scal: scaling
-            rot, scal = eig_vec, np.diag(np.sqrt(eig_val))
+            rot, scale = eig_vec, np.diag(1 / np.sqrt(eig_val))
             # trans: transformation matrix
             # trans = rot . scal
-            trans = rot.dot(scal).T
+            trans = rot.dot(scale)
 
             try:
-                trans_two_col = local_data_df.dot(np.linalg.inv(trans))
+                trans_two_col = local_data_df.dot(trans)
                 trans_two_col.columns = [cols[0], cols[1]]
-
-                # print('Bef')
-                # print(trans_two_col.head())
-                # print(eig_val)
-
-                # print('Aft')
-                # trans_two_col_norm = trans_two_col.div(np.sqrt(eig_val), axis=1)
-                # print(trans_two_col_norm.head())
 
                 one_col = trans_two_col[cols[0]].append(trans_two_col[cols[1]],
                                                         ignore_index=True)
