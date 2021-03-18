@@ -25,7 +25,7 @@ The module contains the following functions:
 # Modules
 
 import pickle
-from typing import Any, Iterator, List, Tuple
+from typing import List
 
 import numpy as np  # type: ignore
 import pandas as pd  # type: ignore
@@ -146,7 +146,7 @@ def correlation_matrix_data(dates: List[str], time_step: str) -> None:
 
 
 def aggregated_dist_returns_market_data(dates: List[str],
-                                        time_step: str) -> pd.Series:
+                                        time_step: str) -> None:
     """Computes the aggregated distribution of returns for a market.
 
     :param dates: List of the interval of dates to be analyzed
@@ -163,11 +163,11 @@ def aggregated_dist_returns_market_data(dates: List[str],
     try:
 
         # Load data
-        returns_data: pd.DataFrame = pickle.load(open(
+        returns_vals: pd.DataFrame = pickle.load(open(
             f'../data/correlation_matrix/returns_data_{dates[0]}_{dates[1]}'
             + f'_step_{time_step}.pickle', 'rb'))
 
-        cov: pd.DataFrame = returns_data.cov()
+        cov: pd.DataFrame = returns_vals.cov()
         # eig_vec:  eigenvector, eig_val: eigenvalues
         eig_val, eig_vec = np.linalg.eig(cov)
 
@@ -177,8 +177,8 @@ def aggregated_dist_returns_market_data(dates: List[str],
         # trans = rot . scal
         trans = rot.dot(scale)
 
-        trans_returns: pd.DataFrame = returns_data.dot(trans)
-        trans_returns.columns = returns_data.columns
+        trans_returns: pd.DataFrame = returns_vals.dot(trans)
+        trans_returns.columns = returns_vals.columns
 
         one_col: List[pd.Series] = []
 
@@ -192,7 +192,7 @@ def aggregated_dist_returns_market_data(dates: List[str],
         correlation_matrix_tools \
             .save_data(agg_returns, function_name, dates, time_step)
 
-        del returns_data
+        del returns_vals
         del trans_returns
         del agg_returns
         del one_col
@@ -201,7 +201,6 @@ def aggregated_dist_returns_market_data(dates: List[str],
         print('No data')
         print(error)
         print()
-        return None
 
 # ----------------------------------------------------------------------------
 
