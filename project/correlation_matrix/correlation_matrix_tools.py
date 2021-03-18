@@ -10,6 +10,7 @@ This script requires the following modules:
     * typing
     * matplotlib
     * numpy
+    * scipy
 
 The module contains the following functions:
     * save_data - saves computed data.
@@ -33,6 +34,8 @@ from typing import Any, List
 
 from matplotlib import pyplot as plt  # type: ignore
 import numpy as np  # type: ignore
+# modified Bessel function of the second kind of real order v
+from scipy.special import gamma, kv  # type:ignore
 
 # -----------------------------------------------------------------------------
 
@@ -183,10 +186,10 @@ def gaussian_distribution(mean: float, variance: float,
                           x_values: np.ndarray) -> np.ndarray:
     """Compute the Gaussian distribution values.
 
-        :param mean: mean of the Gaussian distribution.
-        :param variance: variance of the Gaussian distribution.
-        :param x: array of the values to compute the Gaussian
-         distribution
+    :param mean: mean of the Gaussian distribution.
+    :param variance: variance of the Gaussian distribution.
+    :param x: array of the values to compute the Gaussian
+     distribution
     """
 
     return (1 / (2 * np.pi * variance) ** 0.5) \
@@ -195,6 +198,30 @@ def gaussian_distribution(mean: float, variance: float,
 # -----------------------------------------------------------------------------
 
 
+def k_distribution(returns: np.ndarray, N: float, alpha: int) -> np.ndarray:
+    """Rotates the returns in the eigenbasis of the covariance matrix and
+       normalizes them to standard deviation 1.
+
+    The returns pd.DataFrame must have a TxK dimension, and K must be smaller
+    than T.
+
+    :param returns: np.ndarray with the return values.
+    :param N: effective number of degrees of freedom.
+    :param alpha: array of the values to compute the Gaussian
+    distribution
+    """
+
+    first_part = (((np.sqrt(2)) ** (1 - N)) / (np.sqrt(np.pi) * gamma(N / 2)))\
+                 * (np.sqrt(N / alpha)) ** (N / 2 + 0.5) \
+                 * (np.abs(returns)) ** (N/2 - 0.5)
+
+    second_part = kv(N / 2 - 0.5, np.abs(returns) * np.sqrt(N / alpha))
+
+    dist = first_part * second_part
+
+    return dist
+
+# -----------------------------------------------------------------------------
 def main() -> None:
     """The main function of the script.
 
