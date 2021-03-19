@@ -29,7 +29,7 @@ The module contains the following functions:
 # Modules
 
 from itertools import product as iprod
-from itertools import permutations as iperm
+from itertools import combinations as icomb
 import multiprocessing as mp
 import pickle
 from typing import Any, Iterator, List, Tuple
@@ -258,15 +258,16 @@ def ln_aggregated_dist_returns_market_data(dates: List[str], time_step: str,
 
         agg_ret_mkt_list: List[float] = []
 
-        stocks_perm: Iterator[Tuple[Any, ...]] = iperm(stocks_name, 2)
-        args_prod: Iterator[Any] = iprod([dates], [time_step], stocks_perm,
+        stocks_comb: Iterator[Tuple[Any, ...]] = icomb(stocks_name, 2)
+        args_prod: Iterator[Any] = iprod([dates], [time_step], stocks_comb,
                                          [window])
 
         with mp.Pool(processes=mp.cpu_count()) as pool:
             agg_ret_mkt_list.extend(pool.starmap(
                 ln_aggregated_dist_returns_pair_data, args_prod))
 
-        agg_ret_mkt_series: pd.Series = pd.Series(agg_ret_mkt_list[0])
+        agg_ret_mkt_list_flat = [val for sublist in agg_ret_mkt_list for val in sublist]
+        agg_ret_mkt_series: pd.Series = pd.Series(agg_ret_mkt_list_flat)
 
         # Saving data
         local_normalization_tools \
@@ -292,7 +293,8 @@ def main() -> None:
     :return: None.
     """
 
-    ln_aggregated_dist_returns_pair_data(['1992-01', '2012-12'], '1d', ['AAPL', 'MSFT'], '25')
+    # ln_aggregated_dist_returns_pair_data(['1992-01', '2012-12'], '1d', ['AAPL', 'MSFT'], '25')
+    ln_aggregated_dist_returns_market_data(['1992-01', '2012-12'], '1d', '25')
 
 
 # -----------------------------------------------------------------------------

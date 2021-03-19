@@ -58,7 +58,7 @@ def save_data(data: Any, function_name: str, dates: List[str], time_step: str,
 
     pickle.dump(data, open(
         f'../data/local_normalization/{function_name}_{dates[0]}_{dates[1]}'
-                + f'_step_{time_step}_win_{window}.pickle', 'wb'))
+                + f'_step_{time_step}_win_{window}.pickle', 'wb'), protocol=4)
 
     print('Data Saved')
     print()

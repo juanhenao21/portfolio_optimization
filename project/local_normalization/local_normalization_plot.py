@@ -370,24 +370,28 @@ def ln_aggregated_dist_returns_market_plot(dates: List[str], time_step: str,
         agg_returns_data: pd.Series = pickle.load(open(
             '../data/local_normalization/ln_aggregated_dist_returns_market'
             + f'_data_{dates[0]}_{dates[1]}_step_{time_step}_win_{window}'
-            + f'.pickle', 'rb'))[::2]
+            + f'.pickle', 'rb'))#[::2]
 
-        x_gauss: np.ndarray = np.arange(-6, 6, 0.001)
+        agg_returns_data = agg_returns_data[np.isfinite(agg_returns_data)]
+        print(len(agg_returns_data))
+
+
+        x_gauss: np.ndarray = np.arange(-6, 6, 0.1)
         gaussian: np.ndarray = local_normalization_tools \
             .gaussian_distribution(0, 1, x_gauss)
 
         # Log plot
-        plot_log = agg_returns_data.plot(kind='density', style='o', logy=True,
-                                         figsize=(16, 9), legend=False)
+        plot_log = agg_returns_data[:-3].plot(kind='density', style='-', logy=True,
+                                         figsize=(16, 9), legend=False, lw=3)
 
-        plt.semilogy(x_gauss, gaussian, lw=5)
+        plt.semilogy(x_gauss, gaussian, 'o', lw=3)
         plt.title(f'Local norm. dist. returns from {dates[0]} to'
                   + f' {dates[1]} - {time_step}', fontsize=30)
         plt.xlabel(f'Aggregated returns - window {window}', fontsize=25)
         plt.ylabel('Counts', fontsize=25)
         plt.xticks(fontsize=15)
         plt.yticks(fontsize=15)
-        plt.xlim(-5, 5)
+        plt.xlim(-6, 6)
         plt.ylim(10 ** -5, 10)
         plt.grid(True)
         plt.tight_layout()
@@ -419,6 +423,8 @@ def main() -> None:
 
     :return: None.
     """
+
+    ln_aggregated_dist_returns_market_plot(['1992-01', '2012-12'], '1d', '25')
 
 # -----------------------------------------------------------------------------
 
