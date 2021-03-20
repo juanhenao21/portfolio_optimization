@@ -254,7 +254,7 @@ def ln_aggregated_dist_returns_market_data(dates: List[str], time_step: str,
         # Load data
         stocks_name: pd.DataFrame = pickle.load(open(
             f'../data/correlation_matrix/returns_data_{dates[0]}_{dates[1]}'
-            + f'_step_{time_step}.pickle', 'rb')).columns
+            + f'_step_{time_step}.pickle', 'rb')).columns[:20]
 
         agg_ret_mkt_list: List[float] = []
 
