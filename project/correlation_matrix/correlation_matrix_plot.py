@@ -249,7 +249,7 @@ def correlation_matrix_plot(dates: List[str], time_step: str) -> None:
             f'../data/correlation_matrix/correlation_matrix_data_{dates[0]}'
             + f'_{dates[1]}_step_{time_step}.pickle', 'rb'))
 
-        sns.heatmap(correlations, cmap='Blues')  # , vmin=-1, vmax=1)
+        sns.heatmap(correlations, cmap='Blues', square=True)  # , vmin=-1, vmax=1)
 
         plt.title(f'Correlation matrix from {dates[0]} to {dates[1]} -'
                   + f' {time_step}', fontsize=30)
@@ -362,7 +362,9 @@ def main() -> None:
     :return: None.
     """
 
-    aggregated_dist_returns_market_plot(['1992-01', '2012-12'], '1d')
+    # aggregated_dist_returns_market_plot(['1992-01', '2012-12'], '1d')
+    correlation_matrix_plot(['2005-10', '2005-12'], '1d')
+    correlation_matrix_plot(['2006-01', '2006-03'], '1d')
 
 # -----------------------------------------------------------------------------
 
